@@ -238,6 +238,23 @@ function AdminPanel() {
     }
   };
 
+  const handleDeleteEvaluation = async (id) => {
+    if (window.confirm('정말로 이 수행평가를 삭제하시겠습니까?')) {
+      try {
+        setLoading(true);
+        await deleteEvaluation(id);
+        // 삭제 후 목록 즉시 업데이트
+        setEvaluations(prev => prev.filter(evaluation => evaluation.id !== id));
+        setError(null);
+      } catch (err) {
+        console.error('수행평가 삭제 중 에러:', err);
+        setError('수행평가 삭제에 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="admin-panel">
@@ -453,7 +470,7 @@ function AdminPanel() {
             <p>날짜: {evaluation.default_date}</p>
             <div className="evaluation-actions">
               <button onClick={() => handleEdit(evaluation)}>수정</button>
-              <button onClick={() => deleteEvaluation(evaluation.id)}>삭제</button>
+              <button onClick={() => handleDeleteEvaluation(evaluation.id)}>삭제</button>
             </div>
           </div>
         ))}
