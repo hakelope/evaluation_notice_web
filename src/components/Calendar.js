@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import { useNavigate } from 'react-router-dom';
-import { evaluations } from '../data/evaluations';
+import { getEvaluations } from '../services/evaluationService';
+import { supabase } from '../config/supabase';
 import 'react-calendar/dist/Calendar.css';
 import './Calendar.css';
 
@@ -9,7 +10,42 @@ function CalendarComponent() {
   const [date, setDate] = useState(new Date());
   const [selectedClass, setSelectedClass] = useState(1); // 기본값 1반
   const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
+  const [evaluations, setEvaluations] = useState([]);
   const navigate = useNavigate();
+
+  const loadEvaluations = async () => {
+    try {
+      const data = await getEvaluations();
+      setEvaluations(data);
+    } catch (err) {
+      console.error('수행평가 목록을 불러오는데 실패했습니다:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadEvaluations();
+
+    // Supabase 실시간 구독 설정
+    const subscription = supabase
+      .channel('evaluations_changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'evaluations' 
+        }, 
+        (payload) => {
+          console.log('변경 감지:', payload);
+          loadEvaluations(); // 데이터 다시 로드
+        }
+      )
+      .subscribe();
+
+    // 컴포넌트 언마운트 시 구독 해제
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // 반 선택 핸들러
   const handleClassChange = (e) => {
@@ -34,7 +70,9 @@ function CalendarComponent() {
 
     // 선택된 반의 날짜에 해당하는 수행평가 찾기
     const dayEvaluations = evaluations.filter(evaluation => {
-      const evaluationDate = evaluation.classDates[selectedClass] || evaluation.defaultDate;
+      // class_dates 배열에서 선택된 반의 날짜 찾기
+      const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass);
+      const evaluationDate = classDate ? classDate.date : evaluation.default_date;
       return evaluationDate === dateStr;
     });
     
@@ -48,9 +86,9 @@ function CalendarComponent() {
               <div 
                 key={index}
                 className="evaluation-text"
-                onClick={() => navigate(`/evaluation/${evaluations.indexOf(evaluation)}`)}
+                onClick={() => navigate(`/evaluation/${evaluation.id}`)}
                 style={{
-                  '--highlight-color': evaluation.highlightColor || '#ffeb3b'
+                  '--highlight-color': evaluation.highlight_color || '#ffeb3b'
                 }}
               >
                 {evaluation.subject}
@@ -70,7 +108,7 @@ function CalendarComponent() {
                     key={index}
                     className="evaluation-slice"
                     style={{
-                      '--highlight-color': evaluation.highlightColor || '#ffeb3b',
+                      '--highlight-color': evaluation.highlight_color || '#ffeb3b',
                       '--angle': `${startAngle}deg`,
                       '--slice-angle': `${sliceAngle}deg`
                     }}
@@ -92,7 +130,8 @@ function CalendarComponent() {
       month: '2-digit',
       day: '2-digit'
     }).replace(/\. /g, '-').replace('.', '');
-    const evaluationDate = evaluation.classDates[selectedClass] || evaluation.defaultDate;
+    const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass);
+    const evaluationDate = classDate ? classDate.date : evaluation.default_date;
     return evaluationDate === dateStr;
   }) : [];
 
@@ -138,9 +177,9 @@ function CalendarComponent() {
                   {selectedDateEvaluations.map((evaluation, index) => (
                     <li 
                       key={index}
-                      onClick={() => navigate(`/evaluation/${evaluations.indexOf(evaluation)}`)}
+                      onClick={() => navigate(`/evaluation/${evaluation.id}`)}
                       style={{
-                        '--highlight-color': evaluation.highlightColor || '#ffeb3b'
+                        '--highlight-color': evaluation.highlight_color || '#ffeb3b'
                       }}
                     >
                       {evaluation.subject} - {evaluation.title}

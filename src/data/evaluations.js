@@ -59,7 +59,7 @@ export const evaluations = [
   {
     subject: "영단어",
     title: "전도언T 영단어 수행평가",
-    highlightColor: "#ffeb3b",
+    highlightColor: "rgb(235, 143, 30)",
     images: [],
     classDates: {
       "1": "2025-05-01",
@@ -110,6 +110,34 @@ export const evaluations = [
         "풀이과정이 적힌 노트"
       ],
       "notes": "단원의 제목은 빨간 볼펜으로 작성하여야 합니다."
+    }
+  },
+  {
+    "subject": "문학",
+    "title": "자료 해석과 주제 융합적 논점 구성",
+    "highlightColor": "#ffeb3b",
+    "images": [],
+    "classDates": {
+      "1": "2025-05-01",
+      "2": "2025-05-01",
+      "3": "2025-05-01",
+      "4": "2025-05-01",
+      "5": "2025-05-01",
+      "6": "2025-05-01",
+      "7": "2025-05-01",
+      "8": "2025-05-01"
+    },
+    "defaultDate": "2025-05-01",
+    "details": {
+      "type": "독서",
+      "deadline": "2025-05-01 21:14",
+      "requirements": [
+        "반드시 종이책 혹은 전자책의 형태로 5월 1일에 읽을 수 있도록 준비할 것"
+      ],
+      "materials": [
+        "책 (전자책 가능)"
+      ],
+      "notes": "없음"
     }
   }
 ]; 
