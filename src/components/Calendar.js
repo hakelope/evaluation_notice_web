@@ -135,10 +135,10 @@ function CalendarComponent() {
               <h3>{selectedDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} 수행평가</h3>
               {selectedDateEvaluations.length > 0 ? (
                 <ul>
-                  {selectedDateEvaluations.map(evaluation => (
+                  {selectedDateEvaluations.map((evaluation, index) => (
                     <li 
-                      key={evaluation.id}
-                      onClick={() => navigate(`/evaluation/${evaluation.id}`)}
+                      key={index}
+                      onClick={() => navigate(`/evaluation/${evaluations.indexOf(evaluation)}`)}
                       style={{
                         '--highlight-color': evaluation.highlightColor || '#ffeb3b'
                       }}
