@@ -1,7 +1,6 @@
 // 수행평가 데이터
 export const evaluations = [
   {
-    id: 1,
     subject: '국어',
     title: '자료 해석과 주제 통합적 논점 구성',
     highlightColor: '#ffeb3b',  // 노란색 형광펜
@@ -35,32 +34,59 @@ export const evaluations = [
     }
   },
   {
-    id: 2,
-    subject: '영단어',
-    title: '1차 수행평가',
-    highlightColor: '#a5d6a7',  // 연한 초록색 형광펜
-    images: [
-      '/images/evaluation2-1.jpg',
-      '/images/evaluation2-2.jpg'
-    ],
-    // 반별 날짜 정보
+    subject: "미적분",
+    title: "수능 기출의 미래 풀어오기",
+    highlightColor: 'rgb(97, 233, 93)',
+    images: [],
     classDates: {
-
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "",
+      "7": "",
+      "8": ""
     },
-    defaultDate: '2025-05-02',  // 입력하지 않은 반의 기본 날짜
+    defaultDate: "2025-04-30",
     details: {
-      type: '발표',
-      deadline: '2025-05-02 23:59',
+      type: "숙제",
+      deadline: "",
       requirements: [
-        '영어 에세이 작성',
-        '발표 자료 준비',
-        '발표 연습'
+        "135번까지 풀어오기"
       ],
       materials: [
-        '영어 사전',
-        '발표 자료 템플릿'
+        "수능 기출의 미래"
       ],
-      notes: '개인 발표로 진행됩니다. 5분 이내로 발표하세요.'
+      notes: "수기미 풀이 숙제입니다"
+    }
+  },
+  {
+    subject: "프로그래밍",
+    title: "3학년 프로그래밍 수행평가",
+    highlightColor: "#ffeb3b",
+    images: [],
+    classDates: {
+      "1": "2025-06-09",
+      "2": "2025-06-09",
+      "3": "2025-06-09",
+      "4": "2025-06-09",
+      "5": "2025-06-09",
+      "6": "2025-06-09",
+      "7": "2025-06-09",
+      "8": "2025-06-09"
+    },
+    defaultDate: "2025-06-09",
+    details: {
+      type: "보고서",
+      deadline: "2025-06-0911:00",
+      requirements: [
+        "보고서 양식에 맞추어 보고서 작성"
+      ],
+      materials: [
+        "코딩 보고서"
+      ],
+      notes: "양식과 채점 기준을 잘 확인하세요."
     }
   }
 ]; 

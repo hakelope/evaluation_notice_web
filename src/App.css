@@ -1,3 +1,14 @@
+@font-face {
+  font-family: 'Cafe24OhsquareAir';
+  src: url('../public/fonts/Cafe24OhsquareAir-v2.0.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  font-family: 'Cafe24OhsquareAir', sans-serif;
+}
+
 .App {
   text-align: center;
   min-height: 100vh;

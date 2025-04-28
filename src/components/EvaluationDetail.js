@@ -9,7 +9,7 @@ import './EvaluationDetail.css';
 function EvaluationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const evaluation = evaluations.find(e => e.id === parseInt(id));
+  const evaluation = evaluations[parseInt(id)];
 
   if (!evaluation) {
     return <div>수행평가를 찾을 수 없습니다.</div>;
@@ -48,13 +48,11 @@ function EvaluationDetail() {
       )}
 
       <div className="evaluation-info">
-        <p className="date">날짜: {evaluation.date}</p>
-        <p className="subject">과목: {evaluation.subject}</p>
-        <p className="title">제목: {evaluation.title}</p>
+        <p className="type">유형: {evaluation.details.type}</p>
         
         <div className="details-section">
           <h3>상세 정보</h3>
-          <p className="type">유형: {evaluation.details.type}</p>
+          
           <p className="deadline">제출 기한: {evaluation.details.deadline}</p>
           
           <div className="requirements">

@@ -1,10 +1,21 @@
 .calendar-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   background: white;
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.calendar-wrapper {
+  flex: 1;
+  min-width: 0;
 }
 
 /* 반 선택 드롭다운 스타일 */
@@ -88,6 +99,29 @@
 .evaluation-text:hover::before {
   opacity: 0.7;
   transform: skewX(-5deg);
+}
+
+.evaluation-more {
+  position: relative;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4CAF50;
+  cursor: pointer;
+  padding: 2px 4px;
+  margin-top: 4px;
+  pointer-events: auto;
+  z-index: 2;
+  width: 100%;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.evaluation-more:hover {
+  background: #4CAF50;
+  color: white;
+  transform: translateX(5px);
 }
 
 /* react-calendar 커스텀 스타일 */
@@ -285,4 +319,264 @@
 
 .react-calendar__month-view {
   animation: fadeIn 0.5s ease;
+}
+
+/* 선택된 날짜의 수행평가 목록 스타일 */
+.selected-date-evaluations {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  margin-top: 0;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 20px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.selected-date-evaluations h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #4CAF50;
+}
+
+.no-evaluation,
+.no-date-selected {
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  margin: 20px 0;
+  padding: 30px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.selected-date-evaluations ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.selected-date-evaluations li {
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  background: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.selected-date-evaluations li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--highlight-color, #ffeb3b);
+}
+
+.selected-date-evaluations li:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 오늘 날짜 텍스트 스타일 */
+.today-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  pointer-events: none;
+  text-align: center;
+  width: 100%;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 2px;
+}
+
+.evaluation-circle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px auto;
+  transition: all 0.3s ease;
+}
+
+.evaluation-circle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.evaluation-slice {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+  transform: rotate(var(--angle));
+  background: var(--highlight-color);
+  opacity: 0.7;
+  transform-origin: center;
+}
+
+.evaluation-slice::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  transform: rotate(calc(var(--slice-angle) / 2));
+  transform-origin: center;
+}
+
+.evaluation-count {
+  position: relative;
+  z-index: 2;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  background: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 768px) {
+  .calendar-container {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .calendar-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .calendar-wrapper {
+    width: 100%;
+  }
+
+  .selected-date-evaluations {
+    width: 100%;
+    max-width: none;
+    margin-top: 20px;
+  }
+
+  .evaluation-circle {
+    width: 35px;
+    height: 35px;
+  }
+
+  .evaluation-count {
+    width: 18px;
+    height: 18px;
+    font-size: 0.8rem;
+  }
+
+  .react-calendar__tile {
+    height: 90px !important;
+    padding: 8px;
+  }
+
+  .react-calendar__month-view__days__day {
+    height: 90px !important;
+  }
+
+  .evaluation-text {
+    font-size: 0.8rem;
+    padding: 1px 3px;
+  }
+
+  .today-text {
+    font-size: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .calendar-container {
+    padding: 10px;
+    margin: 5px;
+  }
+
+  .class-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .class-select {
+    width: 100%;
+  }
+
+  .evaluation-circle {
+    width: 30px;
+    height: 30px;
+  }
+
+  .evaluation-count {
+    width: 16px;
+    height: 16px;
+    font-size: 0.7rem;
+  }
+
+  .react-calendar__tile {
+    height: 80px !important;
+    padding: 5px;
+  }
+
+  .react-calendar__month-view__days__day {
+    height: 80px !important;
+  }
+
+  .evaluation-text {
+    font-size: 0.7rem;
+    padding: 1px 2px;
+  }
+
+  .today-text {
+    font-size: 1rem;
+  }
+
+  .selected-date-evaluations h3 {
+    font-size: 1.1rem;
+  }
+
+  .selected-date-evaluations li {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
 } 
