@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Calendar from './components/Calendar';
 import EvaluationDetail from './components/EvaluationDetail';
 import AdminPanel from './components/AdminPanel';
@@ -44,9 +44,6 @@ function App() {
         <header className="app-header">
           <h1>창신고 수행평가 공지</h1>
           <nav className="nav-bar">
-            <Link to="/add-evaluation" className="nav-button">
-              수행평가 추가하기
-            </Link>
             <Link to="/" className="nav-button">
               수행평가 일정 확인
             </Link>
@@ -54,7 +51,7 @@ function App() {
               건의하기
             </Link>
             <Link to="/admin" className="nav-button">
-              관리자
+              수행평가 추가하기
             </Link>
           </nav>
         </header>
@@ -62,9 +59,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Calendar />} />
             <Route path="/evaluation/:id" element={<EvaluationDetail />} />
-            <Route path="/add-evaluation" element={<AddEvaluationPage />} />
             <Route path="/suggestion" element={<SuggestionPage />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="*" element={<Calendar />} />
           </Routes>
         </main>
       </div>
