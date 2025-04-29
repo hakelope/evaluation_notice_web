@@ -26,7 +26,7 @@ function SuggestionPage() {
         필요한 기능이 있다면 편하게 건의해주세요.
       </p>
       <a 
-        href="https://open.kakao.com/your-chat-link" 
+        href="https://open.kakao.com/o/sBWuTFth" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="kakao-button"
