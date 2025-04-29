@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
 import { getEvaluations } from '../services/evaluationService';
 import { getImages } from '../services/imageService';
 import 'slick-carousel/slick/slick.css';
@@ -14,6 +16,8 @@ function EvaluationDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     const loadEvaluation = async () => {
@@ -37,6 +41,28 @@ function EvaluationDetail() {
 
     loadEvaluation();
   }, [id]);
+
+  const handleImageClick = (index) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const handleDownload = async (imageUrl, index) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `수행평가_이미지_${index + 1}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('이미지 다운로드 실패:', err);
+    }
+  };
 
   if (loading) {
     return <div className="loading">로딩 중...</div>;
@@ -88,12 +114,47 @@ function EvaluationDetail() {
           <Slider {...sliderSettings}>
             {images.map((image, index) => (
               <div key={index} className="slider-image">
-                <img src={image.url} alt={`수행평가 이미지 ${index + 1}`} />
+                <div className="image-container">
+                  <img 
+                    src={image.url} 
+                    alt={`수행평가 이미지 ${index + 1}`}
+                    onClick={() => handleImageClick(index)}
+                  />
+                  <button 
+                    className="download-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDownload(image.url, index);
+                    }}
+                  >
+                    다운로드
+                  </button>
+                </div>
               </div>
             ))}
           </Slider>
         </div>
       )}
+
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        index={lightboxIndex}
+        slides={images.map(image => ({ src: image.url }))}
+        carousel={{ finite: true }}
+        controller={{ closeOnBackdropClick: true }}
+        toolbar={{
+          buttons: [
+            <button
+              key="download"
+              onClick={() => handleDownload(images[lightboxIndex].url, lightboxIndex)}
+              style={{ color: 'white', background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              다운로드
+            </button>
+          ]
+        }}
+      />
 
       <div className="evaluation-info">
         <p className="type">유형: {evaluation.evaluation_details?.type}</p>
