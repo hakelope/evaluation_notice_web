@@ -70,10 +70,18 @@ function CalendarComponent() {
 
     // 선택된 반의 날짜에 해당하는 수행평가 찾기
     const dayEvaluations = evaluations.filter(evaluation => {
-      // class_dates 배열에서 선택된 반의 날짜 찾기
-      const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass);
-      const evaluationDate = classDate ? classDate.date : evaluation.default_date;
-      return evaluationDate === dateStr;
+      if (evaluation.subject_type === 'elective') {
+        // 선택과목인 경우 모든 반의 날짜 확인
+        const hasClassDate = evaluation.class_dates?.some(cd => cd.date === dateStr);
+        // 반별 날짜가 없으면 default_date 확인
+        return hasClassDate || evaluation.default_date === dateStr;
+      } else {
+        // 일반과목인 경우 선택된 반의 날짜 확인
+        const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass.toString());
+        // 반별 날짜가 있으면 그 날짜를, 없으면 default_date 사용
+        const evaluationDate = classDate ? classDate.date : evaluation.default_date;
+        return evaluationDate === dateStr;
+      }
     });
     
     return (
@@ -82,18 +90,61 @@ function CalendarComponent() {
         {dayEvaluations.length > 0 && (
           dayEvaluations.length <= 2 ? (
             // 2개 이하일 때는 원래처럼 표시
-            dayEvaluations.map((evaluation, index) => (
-              <div 
-                key={index}
-                className="evaluation-text"
-                onClick={() => navigate(`/evaluation/${evaluation.id}`)}
-                style={{
-                  '--highlight-color': evaluation.highlight_color || '#ffeb3b'
-                }}
-              >
-                {evaluation.subject}
-              </div>
-            ))
+            dayEvaluations.map((evaluation, index) => {
+              if (evaluation.subject_type === 'elective') {
+                // 선택과목인 경우 모든 반 표시
+                const classDates = evaluation.class_dates?.filter(cd => cd.date === dateStr) || [];
+                const defaultDateClasses = ['A', 'B', 'C', 'D'].filter(classLetter => 
+                  !evaluation.class_dates?.some(cd => cd.class_number === classLetter)
+                );
+
+                // 반별 날짜가 있는 경우
+                if (classDates.length > 0) {
+                  return classDates.map((classDate, classIndex) => (
+                    <div 
+                      key={`${index}-${classIndex}`}
+                      className="evaluation-text"
+                      onClick={() => navigate(`/evaluation/${evaluation.id}`)}
+                      style={{
+                        '--highlight-color': evaluation.highlight_color || '#ffeb3b'
+                      }}
+                    >
+                      {`${evaluation.subject}-${classDate.class_number}`}
+                    </div>
+                  ));
+                }
+                // 반별 날짜가 없고 default_date가 일치하는 경우
+                else if (evaluation.default_date === dateStr) {
+                  return defaultDateClasses.map((classLetter, classIndex) => (
+                    <div 
+                      key={`${index}-${classIndex}`}
+                      className="evaluation-text"
+                      onClick={() => navigate(`/evaluation/${evaluation.id}`)}
+                      style={{
+                        '--highlight-color': evaluation.highlight_color || '#ffeb3b'
+                      }}
+                    >
+                      {`${evaluation.subject}-${classLetter}`}
+                    </div>
+                  ));
+                }
+                return null;
+              } else {
+                // 일반과목인 경우 기존처럼 표시
+                return (
+                  <div 
+                    key={index}
+                    className="evaluation-text"
+                    onClick={() => navigate(`/evaluation/${evaluation.id}`)}
+                    style={{
+                      '--highlight-color': evaluation.highlight_color || '#ffeb3b'
+                    }}
+                  >
+                    {evaluation.subject}
+                  </div>
+                );
+              }
+            })
           ) : (
             // 4개 이상일 때는 원형으로 표시
             <div 
@@ -130,9 +181,19 @@ function CalendarComponent() {
       month: '2-digit',
       day: '2-digit'
     }).replace(/\. /g, '-').replace('.', '');
-    const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass);
-    const evaluationDate = classDate ? classDate.date : evaluation.default_date;
-    return evaluationDate === dateStr;
+
+    if (evaluation.subject_type === 'elective') {
+      // 선택과목인 경우 모든 반의 날짜 확인
+      const hasClassDate = evaluation.class_dates?.some(cd => cd.date === dateStr);
+      // 반별 날짜가 없으면 default_date 확인
+      return hasClassDate || evaluation.default_date === dateStr;
+    } else {
+      // 일반과목인 경우 선택된 반의 날짜 확인
+      const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass.toString());
+      // 반별 날짜가 있으면 그 날짜를, 없으면 default_date 사용
+      const evaluationDate = classDate ? classDate.date : evaluation.default_date;
+      return evaluationDate === dateStr;
+    }
   }) : [];
 
   return (

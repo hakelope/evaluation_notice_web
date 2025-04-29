@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getEvaluations, addEvaluation, updateEvaluation, deleteEvaluation } from '../services/evaluationService';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getEvaluations, updateEvaluation } from '../services/evaluationService';
 import { uploadImage, getImages, deleteImage } from '../services/imageService';
-import { checkAuth, signIn, signOut } from '../config/supabase';
+import { checkAuth, signOut } from '../config/supabase';
 import './AdminPanel.css';
 
-function AdminPanel() {
-  const [evaluations, setEvaluations] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const itemsPerPage = 10;
+function EditEvaluation() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     subject: '',
     title: '',
@@ -27,43 +26,70 @@ function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-  const [isEditing, setIsEditing] = useState(false);
-
-  const [newMaterial, setNewMaterial] = useState('');
 
   useEffect(() => {
     checkAuthentication();
-  }, []);
+    loadEvaluation();
+  }, [id]);
 
   const checkAuthentication = async () => {
     const auth = await checkAuth();
     setIsAuthenticated(auth);
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      await signIn(loginForm.email, loginForm.password);
-      setIsAuthenticated(true);
-    } catch (err) {
-      console.error('로그인 에러:', err);
-      setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await signOut();
       setIsAuthenticated(false);
+      navigate('/admin/edit');
     } catch (err) {
       console.error('로그아웃 에러:', err);
       setError('로그아웃 중 오류가 발생했습니다.');
+    }
+  };
+
+  const loadEvaluation = async () => {
+    try {
+      const evaluations = await getEvaluations();
+      const evaluation = evaluations.find(e => e.id === id);
+      if (evaluation) {
+        const formData = {
+          id: evaluation.id,
+          subject: evaluation.subject,
+          title: evaluation.title,
+          highlightColor: evaluation.highlight_color,
+          defaultDate: evaluation.default_date,
+          classDates: {},
+          details: {
+            type: evaluation.evaluation_details?.type || '',
+            requirements: evaluation.evaluation_details?.requirements || [],
+            materials: evaluation.evaluation_details?.materials || [],
+            notes: evaluation.evaluation_details?.notes || ''
+          },
+          subjectType: evaluation.subject_type || 'general'
+        };
+
+        evaluation.class_dates?.forEach(cd => {
+          formData.classDates[cd.class_number] = cd.date;
+        });
+
+        setFormData(formData);
+        loadImages(evaluation.id);
+      } else {
+        setError('수행평가를 찾을 수 없습니다.');
+      }
+    } catch (err) {
+      setError('수행평가를 불러오는데 실패했습니다.');
+    }
+  };
+
+  const loadImages = async (evaluationId) => {
+    try {
+      const imageData = await getImages(evaluationId);
+      setImages(imageData);
+    } catch (err) {
+      console.error('이미지 로드 에러:', err);
+      setError('이미지를 불러오는데 실패했습니다.');
     }
   };
 
@@ -102,11 +128,6 @@ function AdminPanel() {
     setError(null);
 
     try {
-      if (!formData.id) {
-        setError('먼저 수행평가를 저장해주세요.');
-        return;
-      }
-
       for (let file of files) {
         const imageData = await uploadImage(formData.id, file);
         setImages(prev => [...prev, imageData]);
@@ -129,187 +150,29 @@ function AdminPanel() {
     setError(null);
 
     try {
-      await addEvaluation(formData);
-      resetForm();
+      await updateEvaluation(formData.id, formData);
+      navigate('/admin/edit');
     } catch (err) {
-      console.error('수행평가 저장 중 에러:', err);
-      setError(`수행평가 저장에 실패했습니다: ${err.message}`);
+      console.error('수행평가 수정 중 에러:', err);
+      setError(`수행평가 수정에 실패했습니다: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      subject: '',
-      title: '',
-      highlightColor: '#61dafb',
-      defaultDate: '',
-      classDates: {},
-      details: {
-        type: '',
-        requirements: [],
-        materials: [],
-        notes: ''
-      },
-      subjectType: 'general'
-    });
-    setImages([]);
+  const handleCancel = () => {
+    navigate('/admin/edit');
   };
-
-  const handleEdit = (evaluation) => {
-    setIsEditing(true);
-    // 데이터 구조 변환
-    const formData = {
-      id: evaluation.id,
-      subject: evaluation.subject,
-      title: evaluation.title,
-      highlightColor: evaluation.highlight_color,
-      defaultDate: evaluation.default_date,
-      classDates: {},
-      details: {
-        type: evaluation.evaluation_details?.type || '',
-        requirements: evaluation.evaluation_details?.requirements || [],
-        materials: evaluation.evaluation_details?.materials || [],
-        notes: evaluation.evaluation_details?.notes || ''
-      },
-      subjectType: evaluation.subject_type || 'general'
-    };
-
-    // class_dates 배열을 객체로 변환
-    evaluation.class_dates?.forEach(cd => {
-      formData.classDates[cd.class_number] = cd.date;
-    });
-
-    setFormData(formData);
-    loadImages(evaluation.id);
-  };
-
-  const loadImages = async (evaluationId) => {
-    try {
-      console.log('이미지 로드 시도:', evaluationId);
-      const imageData = await getImages(evaluationId);
-      console.log('로드된 이미지 데이터:', imageData);
-      setImages(imageData);
-    } catch (err) {
-      console.error('이미지 로드 에러:', err);
-      setError('이미지를 불러오는데 실패했습니다.');
-    }
-  };
-
-  const handleAddMaterial = () => {
-    if (newMaterial.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        details: {
-          ...prev.details,
-          materials: [...prev.details.materials, newMaterial.trim()]
-        }
-      }));
-      setNewMaterial('');
-    }
-  };
-
-  const handleRemoveMaterial = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      details: {
-        ...prev.details,
-        materials: prev.details.materials.filter((_, i) => i !== index)
-      }
-    }));
-  };
-
-  const handleMaterialKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddMaterial();
-    }
-  };
-
-  const handleDeleteEvaluation = async (id) => {
-    if (window.confirm('정말로 이 수행평가를 삭제하시겠습니까?')) {
-      try {
-        setLoading(true);
-        await deleteEvaluation(id);
-        // 삭제 후 목록 즉시 업데이트
-        setEvaluations(prev => prev.filter(evaluation => evaluation.id !== id));
-        setError(null);
-      } catch (err) {
-        console.error('수행평가 삭제 중 에러:', err);
-        setError('수행평가 삭제에 실패했습니다.');
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const handleSubjectTypeChange = (e) => {
-    const subjectType = e.target.value;
-    setFormData(prev => ({
-      ...prev,
-      subjectType,
-      classDates: {}
-    }));
-  };
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // 검색 시 첫 페이지로 이동
-  };
-
-  const getFilteredEvaluations = () => {
-    return evaluations.filter(evaluation => 
-      evaluation.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      evaluation.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
-
-  const getPaginatedEvaluations = () => {
-    const filteredEvaluations = getFilteredEvaluations();
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredEvaluations.slice(startIndex, endIndex);
-  };
-
-  const totalPages = Math.ceil(getFilteredEvaluations().length / itemsPerPage);
 
   if (!isAuthenticated) {
     return (
       <div className="admin-panel">
-        <h2>수행평가 추가하기</h2>
+        <h2>수행평가 수정하기</h2>
         <div className="login-info">
-          <p>이 페이지는 수행평가를 추가하는 관리자 전용 페이지입니다.</p>
+          <p>이 페이지는 수행평가를 수정하는 관리자 전용 페이지입니다.</p>
           <p>관리자 인증이 필요합니다.</p>
         </div>
         {error && <div className="error-message">{error}</div>}
-        <form onSubmit={handleLogin} className="login-form">
-          <div className="form-group">
-            <label>이메일</label>
-            <input
-              type="email"
-              value={loginForm.email}
-              onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>비밀번호</label>
-            <input
-              type="password"
-              value={loginForm.password}
-              onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-              required
-            />
-          </div>
-          <button type="submit" disabled={loading}>
-            {loading ? '로그인 중...' : '로그인'}
-          </button>
-        </form>
       </div>
     );
   }
@@ -317,7 +180,7 @@ function AdminPanel() {
   return (
     <div className="admin-panel">
       <div className="admin-header">
-        <h2>수행평가 추가하기</h2>
+        <h2>수행평가 수정하기</h2>
         <button onClick={handleLogout} className="logout-button">
           로그아웃
         </button>
@@ -452,28 +315,15 @@ function AdminPanel() {
           <div className="materials-input">
             <input
               type="text"
-              value={newMaterial}
-              onChange={(e) => setNewMaterial(e.target.value)}
-              onKeyPress={handleMaterialKeyPress}
-              placeholder="준비물을 입력하고 Enter 또는 추가 버튼을 클릭하세요"
+              value={formData.details.materials.join(', ')}
+              onChange={(e) => handleDetailsChange({
+                target: {
+                  name: 'materials',
+                  value: e.target.value.split(',').map(item => item.trim())
+                }
+              })}
+              placeholder="준비물을 쉼표로 구분하여 입력하세요"
             />
-            <button type="button" onClick={handleAddMaterial} className="add-button">
-              추가
-            </button>
-          </div>
-          <div className="materials-list">
-            {formData.details.materials.map((material, index) => (
-              <div key={index} className="material-item">
-                <span>{material}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveMaterial(index)}
-                  className="remove-button"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -515,8 +365,8 @@ function AdminPanel() {
           <button type="submit" disabled={loading}>
             {loading ? '저장 중...' : '저장'}
           </button>
-          <button type="button" onClick={resetForm}>
-            초기화
+          <button type="button" onClick={handleCancel}>
+            취소
           </button>
         </div>
       </form>
@@ -524,4 +374,4 @@ function AdminPanel() {
   );
 }
 
-export default AdminPanel; 
+export default EditEvaluation; 

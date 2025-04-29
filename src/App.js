@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react
 import Calendar from './components/Calendar';
 import EvaluationDetail from './components/EvaluationDetail';
 import AdminPanel from './components/AdminPanel';
+import EditPanel from './components/EditPanel';
+import EditEvaluation from './components/EditEvaluation';
 import './App.css';
 
 function AddEvaluationPage() {
@@ -53,6 +55,9 @@ function App() {
             <Link to="/admin" className="nav-button">
               수행평가 추가하기
             </Link>
+            <Link to="/admin/edit" className="nav-button edit-button">
+              수행평가 수정하기
+            </Link>
           </nav>
         </header>
         <main>
@@ -61,6 +66,8 @@ function App() {
             <Route path="/evaluation/:id" element={<EvaluationDetail />} />
             <Route path="/suggestion" element={<SuggestionPage />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/edit" element={<EditPanel />} />
+            <Route path="/admin/edit/:id" element={<EditEvaluation />} />
             <Route path="*" element={<Calendar />} />
           </Routes>
         </main>

@@ -58,7 +58,8 @@ export const addEvaluation = async (evaluationData) => {
         subject: evaluationData.subject,
         title: evaluationData.title,
         highlight_color: evaluationData.highlightColor,
-        default_date: evaluationData.defaultDate
+        default_date: evaluationData.defaultDate,
+        subject_type: evaluationData.subjectType
       }])
       .select()
       .single()
@@ -69,16 +70,23 @@ export const addEvaluation = async (evaluationData) => {
     }
 
     // class_dates 테이블에 데이터 추가
-    const classDates = Object.entries(evaluationData.classDates).map(([classNumber, date]) => ({
-      evaluation_id: evaluation.id,
-      class_number: parseInt(classNumber),
-      date: date
-    }))
+    const classDates = Object.entries(evaluationData.classDates)
+      .filter(([_, date]) => date) // 날짜가 있는 경우만 필터링
+      .map(([classNumber, date]) => ({
+        evaluation_id: evaluation.id,
+        class_number: classNumber,
+        date: date
+      }));
 
-    const { error: classDatesError } = await supabase.from('class_dates').insert(classDates)
-    if (classDatesError) {
-      console.error('class_dates 테이블 에러:', classDatesError)
-      throw new Error(`class_dates 테이블 에러: ${classDatesError.message}`)
+    if (classDates.length > 0) {
+      const { error: classDatesError } = await supabase
+        .from('class_dates')
+        .insert(classDates);
+
+      if (classDatesError) {
+        console.error('class_dates 테이블 에러:', classDatesError)
+        throw new Error(`class_dates 테이블 에러: ${classDatesError.message}`)
+      }
     }
 
     // evaluation_details 테이블에 데이터 추가
@@ -109,7 +117,8 @@ export const updateEvaluation = async (id, evaluationData) => {
       subject: evaluationData.subject,
       title: evaluationData.title,
       highlight_color: evaluationData.highlightColor,
-      default_date: evaluationData.defaultDate
+      default_date: evaluationData.defaultDate,
+      subject_type: evaluationData.subjectType
     })
     .eq('id', id)
     .select()
@@ -119,12 +128,25 @@ export const updateEvaluation = async (id, evaluationData) => {
 
   // class_dates 업데이트
   await supabase.from('class_dates').delete().eq('evaluation_id', id)
-  const classDates = Object.entries(evaluationData.classDates).map(([classNumber, date]) => ({
-    evaluation_id: id,
-    class_number: parseInt(classNumber),
-    date: date
-  }))
-  await supabase.from('class_dates').insert(classDates)
+  
+  const classDates = Object.entries(evaluationData.classDates)
+    .filter(([_, date]) => date) // 날짜가 있는 경우만 필터링
+    .map(([classNumber, date]) => ({
+      evaluation_id: id,
+      class_number: classNumber,
+      date: date
+    }));
+
+  if (classDates.length > 0) {
+    const { error: classDatesError } = await supabase
+      .from('class_dates')
+      .insert(classDates);
+
+    if (classDatesError) {
+      console.error('class_dates 테이블 에러:', classDatesError)
+      throw new Error(`class_dates 테이블 에러: ${classDatesError.message}`)
+    }
+  }
 
   // evaluation_details 업데이트
   await supabase.from('evaluation_details')
