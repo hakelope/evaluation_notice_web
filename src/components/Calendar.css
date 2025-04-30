@@ -20,7 +20,6 @@
 
 /* 반 선택 드롭다운 스타일 */
 .class-selector {
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -30,6 +29,7 @@
   font-size: 1.1rem;
   font-weight: 500;
   color: #333;
+  margin: 0;
 }
 
 .class-select {
@@ -41,6 +41,7 @@
   color: #333;
   cursor: pointer;
   transition: all 0.3s ease;
+  height: 40px;
 }
 
 .class-select:hover {
@@ -612,4 +613,37 @@
     font-size: 0.9rem;
     padding: 8px 12px;
   }
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.calendar-controls {
+  position: relative;
+}
+
+.today-button {
+  position: absolute;
+  right: 0;
+  top: -60px; /* 더 위로 올림 */
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  height: 40px;
+  font-size: 1rem;
+  z-index: 1;
+}
+
+.today-button:hover {
+  background-color: #45a049;
 } 

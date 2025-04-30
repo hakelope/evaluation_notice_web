@@ -7,8 +7,14 @@ import 'react-calendar/dist/Calendar.css';
 import './Calendar.css';
 
 function CalendarComponent() {
-  const [date, setDate] = useState(new Date());
-  const [selectedClass, setSelectedClass] = useState(1); // 기본값 1반
+  const today = new Date();
+  const [date, setDate] = useState(today);
+  const [activeStartDate, setActiveStartDate] = useState(today);
+  const [selectedClass, setSelectedClass] = useState(() => {
+    // 로컬 스토리지에서 저장된 반 번호를 불러옴
+    const savedClass = localStorage.getItem('selectedClass');
+    return savedClass ? parseInt(savedClass) : 1; // 저장된 값이 없으면 1반을 기본값으로
+  });
   const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
   const [evaluations, setEvaluations] = useState([]);
   const navigate = useNavigate();
@@ -48,8 +54,10 @@ function CalendarComponent() {
   }, []);
 
   // 반 선택 핸들러
-  const handleClassChange = (e) => {
-    setSelectedClass(parseInt(e.target.value));
+  const handleClassChange = (classNumber) => {
+    setSelectedClass(classNumber);
+    // 선택한 반 번호를 로컬 스토리지에 저장
+    localStorage.setItem('selectedClass', classNumber.toString());
   };
 
   // 날짜 선택 핸들러
@@ -236,34 +244,52 @@ function CalendarComponent() {
 
   return (
     <div className="calendar-container">
-      {/* 반 선택 드롭다운 */}
-      <div className="class-selector">
-        <label htmlFor="class-select">반 선택: </label>
-        <select 
-          id="class-select" 
-          value={selectedClass} 
-          onChange={handleClassChange}
-          className="class-select"
-        >
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-            <option key={num} value={num}>{num}반</option>
-          ))}
-        </select>
+      <div className="calendar-header">
+        <div className="class-selector">
+          <label htmlFor="class-select">반 선택: </label>
+          <select 
+            id="class-select" 
+            value={selectedClass} 
+            onChange={(e) => handleClassChange(parseInt(e.target.value))}
+            className="class-select"
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+              <option key={num} value={num}>{num}반</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="calendar-content">
         <div className="calendar-wrapper">
-          <Calendar
-            onChange={setDate}
-            value={date}
-            tileContent={tileContent}
-            calendarType="US"
-            formatShortWeekday={(locale, date) => {
-              const days = ['일', '월', '화', '수', '목', '금', '토'];
-              return days[date.getDay()];
-            }}
-            onClickDay={handleDateClick}
-          />
+          <div className="calendar-controls">
+            <Calendar
+              onChange={(newDate) => {
+                setDate(newDate);
+                setSelectedDate(newDate);
+              }}
+              onActiveStartDateChange={({ activeStartDate }) => setActiveStartDate(activeStartDate)}
+              value={selectedDate || date}
+              activeStartDate={activeStartDate}
+              tileContent={tileContent}
+              calendarType="US"
+              formatShortWeekday={(locale, date) => {
+                const days = ['일', '월', '화', '수', '목', '금', '토'];
+                return days[date.getDay()];
+              }}
+              onClickDay={handleDateClick}
+            />
+            <button 
+              className="today-button"
+              onClick={() => {
+                setDate(today);
+                setSelectedDate(today);
+                setActiveStartDate(today);
+              }}
+            >
+              오늘
+            </button>
+          </div>
         </div>
 
         {/* 선택된 날짜의 수행평가 목록 */}
