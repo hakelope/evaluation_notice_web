@@ -1,10 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Calendar from './components/Calendar';
 import EvaluationDetail from './components/EvaluationDetail';
 import AdminPanel from './components/AdminPanel';
 import EditPanel from './components/EditPanel';
 import EditEvaluation from './components/EditEvaluation';
+import AdminPage from './components/AdminPage';
 import './App.css';
 
 function AddEvaluationPage() {
@@ -53,10 +54,7 @@ function App() {
               건의하기
             </Link>
             <Link to="/admin" className="nav-button">
-              수행평가 추가하기
-            </Link>
-            <Link to="/admin/edit" className="nav-button edit-button">
-              수행평가 수정하기
+              관리자
             </Link>
           </nav>
         </header>
@@ -65,7 +63,8 @@ function App() {
             <Route path="/" element={<Calendar />} />
             <Route path="/evaluation/:id" element={<EvaluationDetail />} />
             <Route path="/suggestion" element={<SuggestionPage />} />
-            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/add" element={<AdminPanel />} />
             <Route path="/admin/edit" element={<EditPanel />} />
             <Route path="/admin/edit/:id" element={<EditEvaluation />} />
             <Route path="*" element={<Calendar />} />
