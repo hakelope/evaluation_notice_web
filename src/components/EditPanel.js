@@ -257,6 +257,17 @@ function EditPanel() {
               <h4>{evaluation.title}</h4>
               <p>과목: {evaluation.subject}</p>
               <p>날짜: {evaluation.default_date}</p>
+              <div className="evaluation-type">
+                {evaluation.evaluation_type === 'period' && (
+                  <span className="period-badge">수행평가 기간</span>
+                )}
+                {evaluation.evaluation_type === 'submission' && (
+                  <span className="submission-badge">제출 마감일</span>
+                )}
+                {evaluation.evaluation_type === 'implementation' && (
+                  <span className="implementation-badge">실시일</span>
+                )}
+              </div>
               <div className="evaluation-actions">
                 <button onClick={() => handleEdit(evaluation)}>수정</button>
                 <button onClick={() => handleDeleteEvaluation(evaluation.id)}>삭제</button>

@@ -25,7 +25,7 @@ function AdminPanel() {
       notes: ''
     },
     subjectType: 'general',
-    evaluationType: 'single'
+    evaluationType: ''
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -192,7 +192,7 @@ function AdminPanel() {
         notes: ''
       },
       subjectType: 'general',
-      evaluationType: 'single'
+      evaluationType: ''
     });
     setImages([]);
   };
@@ -411,17 +411,29 @@ function AdminPanel() {
         </div>
 
         <div className="form-group">
-          <label>수행평가 유형</label>
+          <label>수행평가 유형 <span className="required">*</span></label>
           <div className="subject-type-buttons">
             <label className="subject-type-label">
               <input
                 type="radio"
                 name="evaluationType"
-                value="single"
-                checked={formData.evaluationType === 'single'}
+                value="submission"
+                checked={formData.evaluationType === 'submission'}
                 onChange={handleInputChange}
+                required
               />
-              <span>하루 수행평가</span>
+              <span>제출 마감일</span>
+            </label>
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="evaluationType"
+                value="implementation"
+                checked={formData.evaluationType === 'implementation'}
+                onChange={handleInputChange}
+                required
+              />
+              <span>실시일</span>
             </label>
             <label className="subject-type-label">
               <input
@@ -430,8 +442,9 @@ function AdminPanel() {
                 value="period"
                 checked={formData.evaluationType === 'period'}
                 onChange={handleInputChange}
+                required
               />
-              <span>기간 수행평가</span>
+              <span>수행평가 기간</span>
             </label>
           </div>
         </div>
@@ -472,16 +485,7 @@ function AdminPanel() {
 
         <div className="form-group">
           <label>기본 날짜 <span className="required">*</span></label>
-          {formData.evaluationType === 'single' ? (
-            <input
-              type="date"
-              name="defaultDate"
-              value={formData.defaultDate}
-              onChange={handleInputChange}
-              placeholder="YYYY-MM-DD"
-              required
-            />
-          ) : (
+          {formData.evaluationType === 'period' ? (
             <div className="date-range-inputs">
               <div className="date-input">
                 <label>시작일</label>
@@ -490,7 +494,6 @@ function AdminPanel() {
                   name="defaultDate"
                   value={formData.defaultDate}
                   onChange={handleInputChange}
-                  placeholder="YYYY-MM-DD"
                   required
                 />
               </div>
@@ -501,28 +504,28 @@ function AdminPanel() {
                   name="defaultEndDate"
                   value={formData.defaultEndDate}
                   onChange={handleInputChange}
-                  placeholder="YYYY-MM-DD"
                   required
                 />
               </div>
             </div>
+          ) : (
+            <input
+              type="date"
+              name="defaultDate"
+              value={formData.defaultDate}
+              onChange={handleInputChange}
+              required
+            />
           )}
         </div>
 
         <div className="form-group">
-          <label>수업 일정</label>
+          <label>반 별 날짜 (공백 시 해당 반은 기본 날짜)</label>
           {formData.subjectType === 'general' ? (
             [1, 2, 3, 4, 5, 6, 7, 8].map(classNumber => (
               <div key={classNumber} className="class-date-input">
                 <label>{classNumber}반</label>
-                {formData.evaluationType === 'single' ? (
-                  <input
-                    type="date"
-                    value={formData.classDates[classNumber] || ''}
-                    onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
-                    placeholder="날짜"
-                  />
-                ) : (
+                {formData.evaluationType === 'period' ? (
                   <div className="date-range-inputs">
                     <div className="date-input">
                       <input
@@ -541,6 +544,12 @@ function AdminPanel() {
                       />
                     </div>
                   </div>
+                ) : (
+                  <input
+                    type="date"
+                    value={formData.classDates[classNumber] || ''}
+                    onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
+                  />
                 )}
               </div>
             ))
@@ -548,14 +557,7 @@ function AdminPanel() {
             ['A', 'B', 'C', 'D'].map(classLetter => (
               <div key={classLetter} className="class-date-input">
                 <label>{classLetter}반</label>
-                {formData.evaluationType === 'single' ? (
-                  <input
-                    type="date"
-                    value={formData.classDates[classLetter] || ''}
-                    onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
-                    placeholder="날짜"
-                  />
-                ) : (
+                {formData.evaluationType === 'period' ? (
                   <div className="date-range-inputs">
                     <div className="date-input">
                       <input
@@ -574,6 +576,12 @@ function AdminPanel() {
                       />
                     </div>
                   </div>
+                ) : (
+                  <input
+                    type="date"
+                    value={formData.classDates[classLetter] || ''}
+                    onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
+                  />
                 )}
               </div>
             ))

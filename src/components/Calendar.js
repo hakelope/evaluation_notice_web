@@ -285,6 +285,12 @@ function CalendarComponent() {
                       {evaluation.evaluation_type === 'period' && (
                         <span className="period-badge">수행평가 기간</span>
                       )}
+                      {evaluation.evaluation_type === 'submission' && (
+                        <span className="submission-badge">제출 마감일</span>
+                      )}
+                      {evaluation.evaluation_type === 'implementation' && (
+                        <span className="implementation-badge">실시일</span>
+                      )}
                     </li>
                   ))}
                 </ul>
