@@ -25,18 +25,36 @@ function AddEvaluationPage() {
 function SuggestionPage() {
   return (
     <div className="suggestion-page">
-      <h2>기능 건의</h2>
-      <p className="notice-text">
-        필요한 기능이 있다면 편하게 건의해주세요.
-      </p>
-      <a 
-        href="https://open.kakao.com/o/sBWuTFth" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="kakao-button"
-      >
-        개발자 오픈채팅으로 건의하기
-      </a>
+      <div className="suggestion-boxes">
+        <div className="suggestion-box">
+          <h2>기능 건의</h2>
+          <p className="notice-text">
+            필요한 기능이 있다면 편하게 건의해주세요.
+          </p>
+          <a 
+            href="https://open.kakao.com/o/sBWuTFth" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="kakao-button"
+          >
+            개발자 오픈채팅으로 건의하기
+          </a>
+        </div>
+        <div className="suggestion-box">
+          <h2>오류 제보</h2>
+          <p className="notice-text">
+            수행평가 일정 등에 오류가 있다면 제보해주세요.
+          </p>
+          <a 
+            href="https://open.kakao.com/o/sE2WiUth" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="kakao-button bug-report"
+          >
+            오픈채팅으로 오류 제보하기
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

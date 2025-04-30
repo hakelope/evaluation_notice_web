@@ -149,15 +149,73 @@ main {
 }
 
 .suggestion-page {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  text-align: center;
+  padding: 20px;
 }
 
-.suggestion-page h2 {
-  color: #282c34;
+.suggestion-boxes {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.suggestion-box {
+  flex: 1;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 300px;
+}
+
+.suggestion-box h2 {
   margin-bottom: 20px;
+  color: #333;
+}
+
+.notice-text {
+  margin-bottom: 30px;
+  color: #666;
+}
+
+.kakao-button {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #FEE500;
+  color: #000000;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.kakao-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kakao-button.bug-report {
+  background-color: #FF4B4B;
+  color: white;
+}
+
+.kakao-button.bug-report:hover {
+  background-color: #FF3333;
+}
+
+@media screen and (max-width: 768px) {
+  .suggestion-boxes {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .suggestion-box {
+    padding: 20px;
+  }
 }
 
 .admin-dropdown {
