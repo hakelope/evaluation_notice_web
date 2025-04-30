@@ -78,7 +78,7 @@ function AdminPage() {
       <h2>관리자 로그인</h2>
       <div className="login-info">
         <p>이 페이지는 관리자 전용 페이지입니다.</p>
-        <p>관리자 인증이 필요합니다.</p>
+        <p>관리자 인증이 필요합니다. <br/>(계정이 없으신 선생님께서는, 30402 김기륭에게 연락 주세요.)</p>
       </div>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleLogin} className="login-form">
