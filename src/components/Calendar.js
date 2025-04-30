@@ -72,12 +72,31 @@ function CalendarComponent() {
     const dayEvaluations = evaluations.filter(evaluation => {
       if (evaluation.subject_type === 'elective') {
         // 선택과목인 경우 모든 반의 날짜 확인
-        const hasClassDate = evaluation.class_dates?.some(cd => cd.date === dateStr);
+        const hasClassDate = evaluation.class_dates?.some(cd => {
+          if (evaluation.evaluation_type === 'period') {
+            // 기간 수행평가인 경우 시작일과 종료일 사이에 있는지 확인
+            const startDate = new Date(cd.date);
+            const endDate = new Date(cd.end_date);
+            return date >= startDate && date <= endDate;
+          }
+          return cd.date === dateStr;
+        });
         // 반별 날짜가 없으면 default_date 확인
+        if (!hasClassDate && evaluation.evaluation_type === 'period') {
+          const startDate = new Date(evaluation.default_date);
+          const endDate = new Date(evaluation.default_end_date);
+          return date >= startDate && date <= endDate;
+        }
         return hasClassDate || evaluation.default_date === dateStr;
       } else {
         // 일반과목인 경우 선택된 반의 날짜 확인
         const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass.toString());
+        if (evaluation.evaluation_type === 'period') {
+          // 기간 수행평가인 경우 시작일과 종료일 사이에 있는지 확인
+          const startDate = new Date(classDate ? classDate.date : evaluation.default_date);
+          const endDate = new Date(classDate ? classDate.end_date : evaluation.default_end_date);
+          return date >= startDate && date <= endDate;
+        }
         // 반별 날짜가 있으면 그 날짜를, 없으면 default_date 사용
         const evaluationDate = classDate ? classDate.date : evaluation.default_date;
         return evaluationDate === dateStr;
@@ -184,12 +203,31 @@ function CalendarComponent() {
 
     if (evaluation.subject_type === 'elective') {
       // 선택과목인 경우 모든 반의 날짜 확인
-      const hasClassDate = evaluation.class_dates?.some(cd => cd.date === dateStr);
+      const hasClassDate = evaluation.class_dates?.some(cd => {
+        if (evaluation.evaluation_type === 'period') {
+          // 기간 수행평가인 경우 시작일과 종료일 사이에 있는지 확인
+          const startDate = new Date(cd.date);
+          const endDate = new Date(cd.end_date);
+          return selectedDate >= startDate && selectedDate <= endDate;
+        }
+        return cd.date === dateStr;
+      });
       // 반별 날짜가 없으면 default_date 확인
+      if (!hasClassDate && evaluation.evaluation_type === 'period') {
+        const startDate = new Date(evaluation.default_date);
+        const endDate = new Date(evaluation.default_end_date);
+        return selectedDate >= startDate && selectedDate <= endDate;
+      }
       return hasClassDate || evaluation.default_date === dateStr;
     } else {
       // 일반과목인 경우 선택된 반의 날짜 확인
       const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass.toString());
+      if (evaluation.evaluation_type === 'period') {
+        // 기간 수행평가인 경우 시작일과 종료일 사이에 있는지 확인
+        const startDate = new Date(classDate ? classDate.date : evaluation.default_date);
+        const endDate = new Date(classDate ? classDate.end_date : evaluation.default_end_date);
+        return selectedDate >= startDate && selectedDate <= endDate;
+      }
       // 반별 날짜가 있으면 그 날짜를, 없으면 default_date 사용
       const evaluationDate = classDate ? classDate.date : evaluation.default_date;
       return evaluationDate === dateStr;
@@ -244,6 +282,9 @@ function CalendarComponent() {
                       }}
                     >
                       {evaluation.subject} - {evaluation.title}
+                      {evaluation.evaluation_type === 'period' && (
+                        <span className="period-badge">수행평가 기간</span>
+                      )}
                     </li>
                   ))}
                 </ul>

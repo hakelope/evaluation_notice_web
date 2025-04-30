@@ -38,17 +38,6 @@
   gap: 15px;
 }
 
-.suggest-button,
-.admin-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
 .suggest-button {
   background-color: #4CAF50;
   color: white;
@@ -56,15 +45,6 @@
 
 .suggest-button:hover {
   background-color: #45a049;
-}
-
-.admin-button {
-  background-color: #2196F3;
-  color: white;
-}
-
-.admin-button:hover {
-  background-color: #1976D2;
 }
 
 .nav-bar {

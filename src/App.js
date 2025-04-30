@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Calendar from './components/Calendar';
 import EvaluationDetail from './components/EvaluationDetail';
@@ -6,6 +6,7 @@ import AdminPanel from './components/AdminPanel';
 import EditPanel from './components/EditPanel';
 import EditEvaluation from './components/EditEvaluation';
 import AdminPage from './components/AdminPage';
+import TutorialPanel from './components/TutorialPanel';
 import './App.css';
 
 function AddEvaluationPage() {
@@ -67,6 +68,7 @@ function App() {
             <Route path="/admin/add" element={<AdminPanel />} />
             <Route path="/admin/edit" element={<EditPanel />} />
             <Route path="/admin/edit/:id" element={<EditEvaluation />} />
+            <Route path="/tutorial" element={<TutorialPanel />} />
             <Route path="*" element={<Calendar />} />
           </Routes>
         </main>

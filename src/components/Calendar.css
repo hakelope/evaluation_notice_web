@@ -380,6 +380,9 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .selected-date-evaluations li::before {
@@ -395,6 +398,16 @@
 .selected-date-evaluations li:hover {
   transform: translateX(5px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.period-badge {
+  font-size: 0.8em;
+  padding: 4px 8px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  margin-left: 10px;
+  white-space: nowrap;
 }
 
 /* 오늘 날짜 텍스트 스타일 */

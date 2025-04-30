@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getEvaluations, updateEvaluation, deleteEvaluation } from '../services/evaluationService';
 import { uploadImage, getImages, deleteImage } from '../services/imageService';
 import { checkAuth, signOut } from '../config/supabase';
@@ -43,7 +43,7 @@ function EditPanel() {
   const handleLogout = async () => {
     try {
       await signOut();
-      setIsAuthenticated(false);
+      navigate('/admin');
     } catch (err) {
       console.error('로그아웃 에러:', err);
       setError('로그아웃 중 오류가 발생했습니다.');
@@ -220,6 +220,17 @@ function EditPanel() {
 
   return (
     <div className="admin-panel">
+      <div className="admin-nav">
+        <Link to="/admin/add" className="nav-button">
+          수행평가 추가하기
+        </Link>
+        <Link to="/admin/edit" className="nav-button active">
+          수행평가 수정하기
+        </Link>
+        <Link to="/tutorial" className="nav-button">
+          사용 가이드
+        </Link>
+      </div>
       <div className="admin-header">
         <h2>수행평가 수정하기</h2>
         <button onClick={handleLogout} className="logout-button">

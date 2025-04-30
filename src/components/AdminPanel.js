@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getEvaluations, addEvaluation, updateEvaluation, deleteEvaluation } from '../services/evaluationService';
 import { uploadImage, getImages, deleteImage } from '../services/imageService';
 import { checkAuth, signIn, signOut } from '../config/supabase';
+import { Link, useNavigate } from 'react-router-dom';
 import './AdminPanel.css';
 
 function AdminPanel() {
@@ -14,14 +15,17 @@ function AdminPanel() {
     title: '',
     highlightColor: '#61dafb',
     defaultDate: '',
+    defaultEndDate: '',
     classDates: {},
+    classEndDates: {},
     details: {
       type: '',
       requirements: [],
       materials: [],
       notes: ''
     },
-    subjectType: 'general'
+    subjectType: 'general',
+    evaluationType: 'single'
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,6 +35,8 @@ function AdminPanel() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [newMaterial, setNewMaterial] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkAuthentication();
@@ -60,7 +66,7 @@ function AdminPanel() {
   const handleLogout = async () => {
     try {
       await signOut();
-      setIsAuthenticated(false);
+      navigate('/admin');
     } catch (err) {
       console.error('로그아웃 에러:', err);
       setError('로그아웃 중 오류가 발생했습니다.');
@@ -91,6 +97,16 @@ function AdminPanel() {
       ...prev,
       classDates: {
         ...prev.classDates,
+        [classNumber]: date
+      }
+    }));
+  };
+
+  const handleClassEndDateChange = (classNumber, date) => {
+    setFormData(prev => ({
+      ...prev,
+      classEndDates: {
+        ...prev.classEndDates,
         [classNumber]: date
       }
     }));
@@ -129,7 +145,28 @@ function AdminPanel() {
     setError(null);
 
     try {
-      await addEvaluation(formData);
+      // 수행평가 저장
+      const evaluationData = {
+        ...formData,
+        evaluation_type: formData.evaluationType,
+        default_end_date: formData.evaluationType === 'period' ? formData.defaultEndDate : null,
+        class_dates: Object.entries(formData.classDates).map(([classNumber, date]) => ({
+          class_number: classNumber,
+          date: date,
+          end_date: formData.evaluationType === 'period' ? formData.classEndDates[classNumber] : null
+        }))
+      };
+
+      const savedEvaluation = await addEvaluation(evaluationData);
+      
+      // 이미지 업로드
+      const imageFiles = document.querySelector('input[type="file"]').files;
+      if (imageFiles && imageFiles.length > 0) {
+        for (let file of imageFiles) {
+          await uploadImage(savedEvaluation.id, file);
+        }
+      }
+      
       resetForm();
     } catch (err) {
       console.error('수행평가 저장 중 에러:', err);
@@ -145,14 +182,17 @@ function AdminPanel() {
       title: '',
       highlightColor: '#61dafb',
       defaultDate: '',
+      defaultEndDate: '',
       classDates: {},
+      classEndDates: {},
       details: {
         type: '',
         requirements: [],
         materials: [],
         notes: ''
       },
-      subjectType: 'general'
+      subjectType: 'general',
+      evaluationType: 'single'
     });
     setImages([]);
   };
@@ -166,19 +206,25 @@ function AdminPanel() {
       title: evaluation.title,
       highlightColor: evaluation.highlight_color,
       defaultDate: evaluation.default_date,
+      defaultEndDate: evaluation.default_end_date,
       classDates: {},
+      classEndDates: {},
       details: {
         type: evaluation.evaluation_details?.type || '',
         requirements: evaluation.evaluation_details?.requirements || [],
         materials: evaluation.evaluation_details?.materials || [],
         notes: evaluation.evaluation_details?.notes || ''
       },
-      subjectType: evaluation.subject_type || 'general'
+      subjectType: evaluation.subject_type || 'general',
+      evaluationType: evaluation.evaluation_type || 'single'
     };
 
     // class_dates 배열을 객체로 변환
     evaluation.class_dates?.forEach(cd => {
       formData.classDates[cd.class_number] = cd.date;
+      if (evaluation.evaluation_type === 'period') {
+        formData.classEndDates[cd.class_number] = cd.end_date;
+      }
     });
 
     setFormData(formData);
@@ -249,7 +295,8 @@ function AdminPanel() {
     setFormData(prev => ({
       ...prev,
       subjectType,
-      classDates: {}
+      classDates: {},
+      classEndDates: {}
     }));
   };
 
@@ -316,6 +363,17 @@ function AdminPanel() {
 
   return (
     <div className="admin-panel">
+      <div className="admin-nav">
+        <Link to="/admin/add" className="nav-button active">
+          수행평가 추가하기
+        </Link>
+        <Link to="/admin/edit" className="nav-button">
+          수행평가 수정하기
+        </Link>
+        <Link to="/tutorial" className="nav-button">
+          사용 가이드
+        </Link>
+      </div>
       <div className="admin-header">
         <h2>수행평가 추가하기</h2>
         <button onClick={handleLogout} className="logout-button">
@@ -353,23 +411,51 @@ function AdminPanel() {
         </div>
 
         <div className="form-group">
-          <label>과목</label>
+          <label>수행평가 유형</label>
+          <div className="subject-type-buttons">
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="evaluationType"
+                value="single"
+                checked={formData.evaluationType === 'single'}
+                onChange={handleInputChange}
+              />
+              <span>하루 수행평가</span>
+            </label>
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="evaluationType"
+                value="period"
+                checked={formData.evaluationType === 'period'}
+                onChange={handleInputChange}
+              />
+              <span>기간 수행평가</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>과목 <span className="required">*</span></label>
           <input
             type="text"
             name="subject"
             value={formData.subject}
             onChange={handleInputChange}
+            placeholder="예: 수학, 영어, 과학"
             required
           />
         </div>
 
         <div className="form-group">
-          <label>제목</label>
+          <label>제목 <span className="required">*</span></label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleInputChange}
+            placeholder="예: 1학기 중간고사"
             required
           />
         </div>
@@ -385,14 +471,42 @@ function AdminPanel() {
         </div>
 
         <div className="form-group">
-          <label>기본 날짜</label>
-          <input
-            type="date"
-            name="defaultDate"
-            value={formData.defaultDate}
-            onChange={handleInputChange}
-            required
-          />
+          <label>기본 날짜 <span className="required">*</span></label>
+          {formData.evaluationType === 'single' ? (
+            <input
+              type="date"
+              name="defaultDate"
+              value={formData.defaultDate}
+              onChange={handleInputChange}
+              placeholder="YYYY-MM-DD"
+              required
+            />
+          ) : (
+            <div className="date-range-inputs">
+              <div className="date-input">
+                <label>시작일</label>
+                <input
+                  type="date"
+                  name="defaultDate"
+                  value={formData.defaultDate}
+                  onChange={handleInputChange}
+                  placeholder="YYYY-MM-DD"
+                  required
+                />
+              </div>
+              <div className="date-input">
+                <label>종료일</label>
+                <input
+                  type="date"
+                  name="defaultEndDate"
+                  value={formData.defaultEndDate}
+                  onChange={handleInputChange}
+                  placeholder="YYYY-MM-DD"
+                  required
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -401,34 +515,79 @@ function AdminPanel() {
             [1, 2, 3, 4, 5, 6, 7, 8].map(classNumber => (
               <div key={classNumber} className="class-date-input">
                 <label>{classNumber}반</label>
-                <input
-                  type="date"
-                  value={formData.classDates[classNumber] || ''}
-                  onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
-                />
+                {formData.evaluationType === 'single' ? (
+                  <input
+                    type="date"
+                    value={formData.classDates[classNumber] || ''}
+                    onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
+                    placeholder="날짜"
+                  />
+                ) : (
+                  <div className="date-range-inputs">
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classDates[classNumber] || ''}
+                        onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
+                        placeholder="시작일"
+                      />
+                    </div>
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classEndDates[classNumber] || ''}
+                        onChange={(e) => handleClassEndDateChange(classNumber, e.target.value)}
+                        placeholder="종료일"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           ) : (
             ['A', 'B', 'C', 'D'].map(classLetter => (
               <div key={classLetter} className="class-date-input">
                 <label>{classLetter}반</label>
-                <input
-                  type="date"
-                  value={formData.classDates[classLetter] || ''}
-                  onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
-                />
+                {formData.evaluationType === 'single' ? (
+                  <input
+                    type="date"
+                    value={formData.classDates[classLetter] || ''}
+                    onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
+                    placeholder="날짜"
+                  />
+                ) : (
+                  <div className="date-range-inputs">
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classDates[classLetter] || ''}
+                        onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
+                        placeholder="시작일"
+                      />
+                    </div>
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classEndDates[classLetter] || ''}
+                        onChange={(e) => handleClassEndDateChange(classLetter, e.target.value)}
+                        placeholder="종료일"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}
         </div>
 
         <div className="form-group">
-          <label>유형</label>
+          <label>유형 <span className="required">*</span></label>
           <input
             type="text"
             name="type"
             value={formData.details.type}
             onChange={handleDetailsChange}
+            placeholder="예: 필기시험, 실기평가, 발표"
             required
           />
         </div>

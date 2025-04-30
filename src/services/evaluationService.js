@@ -59,14 +59,16 @@ export const addEvaluation = async (evaluationData) => {
         title: evaluationData.title,
         highlight_color: evaluationData.highlightColor,
         default_date: evaluationData.defaultDate,
-        subject_type: evaluationData.subjectType
+        default_end_date: evaluationData.evaluationType === 'period' ? evaluationData.defaultEndDate : null,
+        subject_type: evaluationData.subjectType,
+        evaluation_type: evaluationData.evaluationType
       }])
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error('evaluations 테이블 에러:', error)
-      throw new Error(`evaluations 테이블 에러: ${error.message}`)
+      console.error('evaluations 테이블 에러:', error);
+      throw new Error(`evaluations 테이블 에러: ${error.message}`);
     }
 
     // class_dates 테이블에 데이터 추가
@@ -75,7 +77,8 @@ export const addEvaluation = async (evaluationData) => {
       .map(([classNumber, date]) => ({
         evaluation_id: evaluation.id,
         class_number: classNumber,
-        date: date
+        date: date,
+        end_date: evaluationData.evaluationType === 'period' ? evaluationData.classEndDates[classNumber] : null
       }));
 
     if (classDates.length > 0) {
@@ -84,31 +87,33 @@ export const addEvaluation = async (evaluationData) => {
         .insert(classDates);
 
       if (classDatesError) {
-        console.error('class_dates 테이블 에러:', classDatesError)
-        throw new Error(`class_dates 테이블 에러: ${classDatesError.message}`)
+        console.error('class_dates 테이블 에러:', classDatesError);
+        throw new Error(`class_dates 테이블 에러: ${classDatesError.message}`);
       }
     }
 
     // evaluation_details 테이블에 데이터 추가
-    const { error: detailsError } = await supabase.from('evaluation_details').insert([{
-      evaluation_id: evaluation.id,
-      type: evaluationData.details.type,
-      requirements: evaluationData.details.requirements,
-      materials: evaluationData.details.materials,
-      notes: evaluationData.details.notes
-    }])
+    const { error: detailsError } = await supabase
+      .from('evaluation_details')
+      .insert([{
+        evaluation_id: evaluation.id,
+        type: evaluationData.details.type,
+        requirements: evaluationData.details.requirements,
+        materials: evaluationData.details.materials,
+        notes: evaluationData.details.notes
+      }]);
 
     if (detailsError) {
-      console.error('evaluation_details 테이블 에러:', detailsError)
-      throw new Error(`evaluation_details 테이블 에러: ${detailsError.message}`)
+      console.error('evaluation_details 테이블 에러:', detailsError);
+      throw new Error(`evaluation_details 테이블 에러: ${detailsError.message}`);
     }
 
-    return evaluation
+    return evaluation;
   } catch (error) {
-    console.error('수행평가 추가 중 에러 발생:', error)
-    throw error
+    console.error('수행평가 추가 중 에러 발생:', error);
+    throw error;
   }
-}
+};
 
 export const updateEvaluation = async (id, evaluationData) => {
   const { data: evaluation, error } = await supabase
@@ -118,7 +123,9 @@ export const updateEvaluation = async (id, evaluationData) => {
       title: evaluationData.title,
       highlight_color: evaluationData.highlightColor,
       default_date: evaluationData.defaultDate,
-      subject_type: evaluationData.subjectType
+      default_end_date: evaluationData.evaluationType === 'period' ? evaluationData.defaultEndDate : null,
+      subject_type: evaluationData.subjectType,
+      evaluation_type: evaluationData.evaluationType
     })
     .eq('id', id)
     .select()
@@ -134,7 +141,8 @@ export const updateEvaluation = async (id, evaluationData) => {
     .map(([classNumber, date]) => ({
       evaluation_id: id,
       class_number: classNumber,
-      date: date
+      date: date,
+      end_date: evaluationData.evaluationType === 'period' ? evaluationData.classEndDates[classNumber] : null
     }));
 
   if (classDates.length > 0) {
@@ -159,10 +167,52 @@ export const updateEvaluation = async (id, evaluationData) => {
 }
 
 export const deleteEvaluation = async (id) => {
-  const { error } = await supabase
-    .from('evaluations')
-    .delete()
-    .eq('id', id)
+  try {
+    // 1. 관련된 이미지 삭제
+    const { error: imagesError } = await supabase
+      .from('images')
+      .delete()
+      .eq('evaluation_id', id);
 
-  if (error) throw error
-} 
+    if (imagesError) {
+      console.error('이미지 삭제 중 에러:', imagesError);
+      throw new Error(`이미지 삭제 중 에러: ${imagesError.message}`);
+    }
+
+    // 2. 평가 상세 정보 삭제
+    const { error: detailsError } = await supabase
+      .from('evaluation_details')
+      .delete()
+      .eq('evaluation_id', id);
+
+    if (detailsError) {
+      console.error('평가 상세 정보 삭제 중 에러:', detailsError);
+      throw new Error(`평가 상세 정보 삭제 중 에러: ${detailsError.message}`);
+    }
+
+    // 3. 반별 날짜 정보 삭제
+    const { error: classDatesError } = await supabase
+      .from('class_dates')
+      .delete()
+      .eq('evaluation_id', id);
+
+    if (classDatesError) {
+      console.error('반별 날짜 정보 삭제 중 에러:', classDatesError);
+      throw new Error(`반별 날짜 정보 삭제 중 에러: ${classDatesError.message}`);
+    }
+
+    // 4. 수행평가 삭제
+    const { error: evaluationError } = await supabase
+      .from('evaluations')
+      .delete()
+      .eq('id', id);
+
+    if (evaluationError) {
+      console.error('수행평가 삭제 중 에러:', evaluationError);
+      throw new Error(`수행평가 삭제 중 에러: ${evaluationError.message}`);
+    }
+  } catch (error) {
+    console.error('수행평가 삭제 중 에러 발생:', error);
+    throw error;
+  }
+}; 

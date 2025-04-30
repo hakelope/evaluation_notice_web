@@ -108,6 +108,12 @@
   font-weight: bold;
 }
 
+.required {
+  color: #f44336;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
 .form-group input[type="text"],
 .form-group input[type="date"],
 .form-group input[type="datetime-local"],
@@ -124,19 +130,43 @@
   resize: vertical;
 }
 
-.class-date-input {
+.date-range-inputs {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+  gap: 15px;
+  margin-top: 5px;
+}
+
+.date-input {
+  flex: 1;
+}
+
+.date-input label {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.date-input input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.class-date-input {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
 }
 
 .class-date-input label {
-  width: 60px;
-  margin-bottom: 0;
-}
-
-.class-date-input input {
-  flex: 1;
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: bold;
 }
 
 .image-preview {
@@ -467,4 +497,96 @@
 
 .search-input::placeholder {
   color: #999;
+}
+
+.admin-nav {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-button {
+  flex: 1;
+  padding: 12px 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #666;
+  background-color: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  color: #4CAF50;
+  border-color: #4CAF50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+}
+
+.nav-button.active {
+  color: white;
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+.tutorial-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.tutorial-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.tutorial-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tutorial-section h3 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.tutorial-content {
+  color: #555;
+}
+
+.tutorial-content h4 {
+  color: #2c3e50;
+  margin: 15px 0 10px;
+}
+
+.tutorial-content ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+.tutorial-content li {
+  margin: 8px 0;
+  position: relative;
+  padding-left: 20px;
+}
+
+.tutorial-content li:before {
+  content: "•";
+  color: #3498db;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
 } 

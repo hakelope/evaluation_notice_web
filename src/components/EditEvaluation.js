@@ -13,14 +13,17 @@ function EditEvaluation() {
     title: '',
     highlightColor: '#61dafb',
     defaultDate: '',
+    defaultEndDate: '',
     classDates: {},
+    classEndDates: {},
     details: {
       type: '',
       requirements: [],
       materials: [],
       notes: ''
     },
-    subjectType: 'general'
+    subjectType: 'general',
+    evaluationType: 'single'
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,8 +43,7 @@ function EditEvaluation() {
   const handleLogout = async () => {
     try {
       await signOut();
-      setIsAuthenticated(false);
-      navigate('/admin/edit');
+      navigate('/admin');
     } catch (err) {
       console.error('로그아웃 에러:', err);
       setError('로그아웃 중 오류가 발생했습니다.');
@@ -59,18 +61,24 @@ function EditEvaluation() {
           title: evaluation.title,
           highlightColor: evaluation.highlight_color,
           defaultDate: evaluation.default_date,
+          defaultEndDate: evaluation.default_end_date,
           classDates: {},
+          classEndDates: {},
           details: {
             type: evaluation.evaluation_details?.type || '',
             requirements: evaluation.evaluation_details?.requirements || [],
             materials: evaluation.evaluation_details?.materials || [],
             notes: evaluation.evaluation_details?.notes || ''
           },
-          subjectType: evaluation.subject_type || 'general'
+          subjectType: evaluation.subject_type || 'general',
+          evaluationType: evaluation.evaluation_type || 'single'
         };
 
         evaluation.class_dates?.forEach(cd => {
           formData.classDates[cd.class_number] = cd.date;
+          if (evaluation.evaluation_type === 'period') {
+            formData.classEndDates[cd.class_number] = cd.end_date;
+          }
         });
 
         setFormData(formData);
@@ -117,6 +125,16 @@ function EditEvaluation() {
       ...prev,
       classDates: {
         ...prev.classDates,
+        [classNumber]: date
+      }
+    }));
+  };
+
+  const handleClassEndDateChange = (classNumber, date) => {
+    setFormData(prev => ({
+      ...prev,
+      classEndDates: {
+        ...prev.classEndDates,
         [classNumber]: date
       }
     }));
@@ -216,7 +234,33 @@ function EditEvaluation() {
         </div>
 
         <div className="form-group">
-          <label>과목</label>
+          <label>수행평가 유형</label>
+          <div className="subject-type-buttons">
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="evaluationType"
+                value="single"
+                checked={formData.evaluationType === 'single'}
+                onChange={handleInputChange}
+              />
+              <span>하루 수행평가</span>
+            </label>
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="evaluationType"
+                value="period"
+                checked={formData.evaluationType === 'period'}
+                onChange={handleInputChange}
+              />
+              <span>기간 수행평가</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>과목 <span className="required">*</span></label>
           <input
             type="text"
             name="subject"
@@ -227,7 +271,7 @@ function EditEvaluation() {
         </div>
 
         <div className="form-group">
-          <label>제목</label>
+          <label>제목 <span className="required">*</span></label>
           <input
             type="text"
             name="title"
@@ -248,14 +292,39 @@ function EditEvaluation() {
         </div>
 
         <div className="form-group">
-          <label>기본 날짜</label>
-          <input
-            type="date"
-            name="defaultDate"
-            value={formData.defaultDate}
-            onChange={handleInputChange}
-            required
-          />
+          <label>기본 날짜 <span className="required">*</span></label>
+          {formData.evaluationType === 'single' ? (
+            <input
+              type="date"
+              name="defaultDate"
+              value={formData.defaultDate}
+              onChange={handleInputChange}
+              required
+            />
+          ) : (
+            <div className="date-range-inputs">
+              <div className="date-input">
+                <label>시작일</label>
+                <input
+                  type="date"
+                  name="defaultDate"
+                  value={formData.defaultDate}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="date-input">
+                <label>종료일</label>
+                <input
+                  type="date"
+                  name="defaultEndDate"
+                  value={formData.defaultEndDate}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -264,22 +333,64 @@ function EditEvaluation() {
             [1, 2, 3, 4, 5, 6, 7, 8].map(classNumber => (
               <div key={classNumber} className="class-date-input">
                 <label>{classNumber}반</label>
-                <input
-                  type="date"
-                  value={formData.classDates[classNumber] || ''}
-                  onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
-                />
+                {formData.evaluationType === 'single' ? (
+                  <input
+                    type="date"
+                    value={formData.classDates[classNumber] || ''}
+                    onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
+                  />
+                ) : (
+                  <div className="date-range-inputs">
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classDates[classNumber] || ''}
+                        onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
+                        placeholder="시작일"
+                      />
+                    </div>
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classEndDates[classNumber] || ''}
+                        onChange={(e) => handleClassEndDateChange(classNumber, e.target.value)}
+                        placeholder="종료일"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           ) : (
             ['A', 'B', 'C', 'D'].map(classLetter => (
               <div key={classLetter} className="class-date-input">
                 <label>{classLetter}반</label>
-                <input
-                  type="date"
-                  value={formData.classDates[classLetter] || ''}
-                  onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
-                />
+                {formData.evaluationType === 'single' ? (
+                  <input
+                    type="date"
+                    value={formData.classDates[classLetter] || ''}
+                    onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
+                  />
+                ) : (
+                  <div className="date-range-inputs">
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classDates[classLetter] || ''}
+                        onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
+                        placeholder="시작일"
+                      />
+                    </div>
+                    <div className="date-input">
+                      <input
+                        type="date"
+                        value={formData.classEndDates[classLetter] || ''}
+                        onChange={(e) => handleClassEndDateChange(classLetter, e.target.value)}
+                        placeholder="종료일"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}
