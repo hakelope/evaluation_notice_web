@@ -61,7 +61,8 @@ export const addEvaluation = async (evaluationData) => {
         default_date: evaluationData.defaultDate,
         default_end_date: evaluationData.evaluationType === 'period' ? evaluationData.defaultEndDate : null,
         subject_type: evaluationData.subjectType,
-        evaluation_type: evaluationData.evaluationType
+        evaluation_type: evaluationData.evaluationType,
+        grade: evaluationData.grade
       }])
       .select()
       .single();
@@ -125,7 +126,8 @@ export const updateEvaluation = async (id, evaluationData) => {
       default_date: evaluationData.defaultDate,
       default_end_date: evaluationData.evaluationType === 'period' ? evaluationData.defaultEndDate : null,
       subject_type: evaluationData.subjectType,
-      evaluation_type: evaluationData.evaluationType
+      evaluation_type: evaluationData.evaluationType,
+      grade: evaluationData.grade
     })
     .eq('id', id)
     .select()

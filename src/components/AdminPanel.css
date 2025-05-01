@@ -642,6 +642,27 @@
   font-weight: 500;
 }
 
+.grade-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-left: 8px;
+  color: white;
+}
+
+.grade-1 {
+  background-color: #4CAF50;
+}
+
+.grade-2 {
+  background-color: #2196F3;
+}
+
+.grade-3 {
+  background-color: #9C27B0;
+}
+
 @media screen and (max-width: 768px) {
   .tutorial-container {
     padding: 10px;
@@ -654,4 +675,56 @@
   .step-item {
     padding: 1rem;
   }
+}
+
+.filter-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.grade-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.grade-filter label {
+  font-weight: 600;
+  color: #666;
+  white-space: nowrap;
+}
+
+.grade-filter-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.grade-filter-button {
+  padding: 8px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: white;
+  color: #666;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.grade-filter-button:hover {
+  border-color: #61dafb;
+  color: #61dafb;
+  transform: translateY(-2px);
+}
+
+.grade-filter-button.active {
+  background-color: #61dafb;
+  border-color: #61dafb;
+  color: white;
+  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.2);
+}
+
+.search-container {
+  flex: 1;
 } 

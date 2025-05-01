@@ -10,6 +10,7 @@ function EditPanel() {
   const [evaluations, setEvaluations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('all');
   const [formData, setFormData] = useState({
     subject: '',
     title: '',
@@ -22,7 +23,8 @@ function EditPanel() {
       materials: [],
       notes: ''
     },
-    subjectType: 'general'
+    subjectType: 'general',
+    grade: '1'
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,10 +67,14 @@ function EditPanel() {
   };
 
   const getFilteredEvaluations = () => {
-    return evaluations.filter(evaluation => 
-      evaluation.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      evaluation.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return evaluations.filter(evaluation => {
+      const matchesSearch = evaluation.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        evaluation.title.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesGrade = selectedGrade === 'all' || evaluation.grade === selectedGrade;
+      
+      return matchesSearch && matchesGrade;
+    });
   };
 
   const getPaginatedEvaluations = () => {
@@ -170,7 +176,8 @@ function EditPanel() {
         materials: [],
         notes: ''
       },
-      subjectType: 'general'
+      subjectType: 'general',
+      grade: '1'
     });
     setImages([]);
   };
@@ -242,14 +249,45 @@ function EditPanel() {
       
       <div className="evaluations-list">
         <h3>등록된 수행평가</h3>
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="과목명 또는 제목으로 검색"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="search-input"
-          />
+        <div className="filter-container">
+          <div className="grade-filter">
+            <label>학년 필터:</label>
+            <div className="grade-filter-buttons">
+              <button
+                className={`grade-filter-button ${selectedGrade === 'all' ? 'active' : ''}`}
+                onClick={() => setSelectedGrade('all')}
+              >
+                전체
+              </button>
+              <button
+                className={`grade-filter-button ${selectedGrade === '1' ? 'active' : ''}`}
+                onClick={() => setSelectedGrade('1')}
+              >
+                1학년
+              </button>
+              <button
+                className={`grade-filter-button ${selectedGrade === '2' ? 'active' : ''}`}
+                onClick={() => setSelectedGrade('2')}
+              >
+                2학년
+              </button>
+              <button
+                className={`grade-filter-button ${selectedGrade === '3' ? 'active' : ''}`}
+                onClick={() => setSelectedGrade('3')}
+              >
+                3학년
+              </button>
+            </div>
+          </div>
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="과목명 또는 제목으로 검색"
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
         </div>
         <div className="evaluations-container">
           {getPaginatedEvaluations().map(evaluation => (
@@ -267,6 +305,9 @@ function EditPanel() {
                 {evaluation.evaluation_type === 'implementation' && (
                   <span className="implementation-badge">실시일</span>
                 )}
+                <span className={`grade-badge grade-${evaluation.grade}`}>
+                  {evaluation.grade}학년
+                </span>
               </div>
               <div className="evaluation-actions">
                 <button onClick={() => handleEdit(evaluation)}>수정</button>
@@ -328,6 +369,45 @@ function EditPanel() {
                   onChange={handleInputChange}
                 />
                 <span>선택과목</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>학년 <span className="required">*</span></label>
+            <div className="subject-type-buttons">
+              <label className="subject-type-label">
+                <input
+                  type="radio"
+                  name="grade"
+                  value="1"
+                  checked={formData.grade === '1'}
+                  onChange={handleInputChange}
+                  required
+                />
+                <span>1학년</span>
+              </label>
+              <label className="subject-type-label">
+                <input
+                  type="radio"
+                  name="grade"
+                  value="2"
+                  checked={formData.grade === '2'}
+                  onChange={handleInputChange}
+                  required
+                />
+                <span>2학년</span>
+              </label>
+              <label className="subject-type-label">
+                <input
+                  type="radio"
+                  name="grade"
+                  value="3"
+                  checked={formData.grade === '3'}
+                  onChange={handleInputChange}
+                  required
+                />
+                <span>3학년</span>
               </label>
             </div>
           </div>

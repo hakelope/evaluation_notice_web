@@ -25,7 +25,8 @@ function AdminPanel() {
       notes: ''
     },
     subjectType: 'general',
-    evaluationType: ''
+    evaluationType: '',
+    grade: '1'  // 기본값 1학년
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -192,7 +193,8 @@ function AdminPanel() {
         notes: ''
       },
       subjectType: 'general',
-      evaluationType: ''
+      evaluationType: '',
+      grade: '1'
     });
     setImages([]);
   };
@@ -216,7 +218,8 @@ function AdminPanel() {
         notes: evaluation.evaluation_details?.notes || ''
       },
       subjectType: evaluation.subject_type || 'general',
-      evaluationType: evaluation.evaluation_type || 'single'
+      evaluationType: evaluation.evaluation_type || 'single',
+      grade: evaluation.grade || '1'
     };
 
     // class_dates 배열을 객체로 변환
@@ -406,6 +409,45 @@ function AdminPanel() {
                 onChange={handleInputChange}
               />
               <span>선택과목</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>학년 <span className="required">*</span></label>
+          <div className="subject-type-buttons">
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="grade"
+                value="1"
+                checked={formData.grade === '1'}
+                onChange={handleInputChange}
+                required
+              />
+              <span>1학년</span>
+            </label>
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="grade"
+                value="2"
+                checked={formData.grade === '2'}
+                onChange={handleInputChange}
+                required
+              />
+              <span>2학년</span>
+            </label>
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="grade"
+                value="3"
+                checked={formData.grade === '3'}
+                onChange={handleInputChange}
+                required
+              />
+              <span>3학년</span>
             </label>
           </div>
         </div>

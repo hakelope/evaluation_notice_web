@@ -15,6 +15,10 @@ function CalendarComponent() {
     const savedClass = localStorage.getItem('selectedClass');
     return savedClass ? parseInt(savedClass) : 1; // 저장된 값이 없으면 1반을 기본값으로
   });
+  const [selectedGrade, setSelectedGrade] = useState(() => {
+    const savedGrade = localStorage.getItem('selectedGrade');
+    return savedGrade || '1';
+  });
   const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
   const [evaluations, setEvaluations] = useState([]);
   const navigate = useNavigate();
@@ -60,6 +64,12 @@ function CalendarComponent() {
     localStorage.setItem('selectedClass', classNumber.toString());
   };
 
+  // 학년 선택 핸들러
+  const handleGradeChange = (grade) => {
+    setSelectedGrade(grade);
+    localStorage.setItem('selectedGrade', grade);
+  };
+
   // 날짜 선택 핸들러
   const handleDateClick = (clickedDate) => {
     setSelectedDate(clickedDate);
@@ -76,8 +86,13 @@ function CalendarComponent() {
     // 오늘 날짜인지 확인
     const isToday = date.toDateString() === new Date().toDateString();
 
-    // 선택된 반의 날짜에 해당하는 수행평가 찾기
+    // 선택된 학년과 반의 날짜에 해당하는 수행평가 찾기
     const dayEvaluations = evaluations.filter(evaluation => {
+      // 먼저 학년 필터링
+      if (evaluation.grade !== selectedGrade) {
+        return false;
+      }
+
       if (evaluation.subject_type === 'elective') {
         // 선택과목인 경우 모든 반의 날짜 확인
         const hasClassDate = evaluation.class_dates?.some(cd => {
@@ -245,18 +260,33 @@ function CalendarComponent() {
   return (
     <div className="calendar-container">
       <div className="calendar-header">
-        <div className="class-selector">
-          <label htmlFor="class-select">반 선택: </label>
-          <select 
-            id="class-select" 
-            value={selectedClass} 
-            onChange={(e) => handleClassChange(parseInt(e.target.value))}
-            className="class-select"
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-              <option key={num} value={num}>{num}반</option>
-            ))}
-          </select>
+        <div className="selection-controls">
+          <div className="grade-selector">
+            <label htmlFor="grade-select">학년 선택: </label>
+            <select 
+              id="grade-select" 
+              value={selectedGrade} 
+              onChange={(e) => handleGradeChange(e.target.value)}
+              className="grade-select"
+            >
+              <option value="1">1학년</option>
+              <option value="2">2학년</option>
+              <option value="3">3학년</option>
+            </select>
+          </div>
+          <div className="class-selector">
+            <label htmlFor="class-select">반 선택: </label>
+            <select 
+              id="class-select" 
+              value={selectedClass} 
+              onChange={(e) => handleClassChange(parseInt(e.target.value))}
+              className="class-select"
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                <option key={num} value={num}>{num}반</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

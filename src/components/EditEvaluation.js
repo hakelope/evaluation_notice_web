@@ -23,7 +23,8 @@ function EditEvaluation() {
       notes: ''
     },
     subjectType: 'general',
-    evaluationType: 'single'
+    evaluationType: 'single',
+    grade: '1'
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -71,7 +72,8 @@ function EditEvaluation() {
             notes: evaluation.evaluation_details?.notes || ''
           },
           subjectType: evaluation.subject_type || 'general',
-          evaluationType: evaluation.evaluation_type || 'single'
+          evaluationType: evaluation.evaluation_type || 'single',
+          grade: evaluation.grade || '1'
         };
 
         evaluation.class_dates?.forEach(cd => {
@@ -229,6 +231,45 @@ function EditEvaluation() {
                 onChange={handleInputChange}
               />
               <span>선택과목</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>학년 <span className="required">*</span></label>
+          <div className="subject-type-buttons">
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="grade"
+                value="1"
+                checked={formData.grade === '1'}
+                onChange={handleInputChange}
+                required
+              />
+              <span>1학년</span>
+            </label>
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="grade"
+                value="2"
+                checked={formData.grade === '2'}
+                onChange={handleInputChange}
+                required
+              />
+              <span>2학년</span>
+            </label>
+            <label className="subject-type-label">
+              <input
+                type="radio"
+                name="grade"
+                value="3"
+                checked={formData.grade === '3'}
+                onChange={handleInputChange}
+                required
+              />
+              <span>3학년</span>
             </label>
           </div>
         </div>
