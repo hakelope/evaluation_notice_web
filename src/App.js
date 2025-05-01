@@ -7,6 +7,7 @@ import EditPanel from './components/EditPanel';
 import EditEvaluation from './components/EditEvaluation';
 import AdminPage from './components/AdminPage';
 import TutorialPanel from './components/TutorialPanel';
+import PatchNote from './components/PatchNote';
 import './App.css';
 
 function AddEvaluationPage() {
@@ -75,6 +76,9 @@ function App() {
             <Link to="/admin" className="nav-button">
               관리자
             </Link>
+            <Link to="/patchnote" className="nav-button">
+              패치 노트
+            </Link>
           </nav>
         </header>
         <main>
@@ -87,6 +91,7 @@ function App() {
             <Route path="/admin/edit" element={<EditPanel />} />
             <Route path="/admin/edit/:id" element={<EditEvaluation />} />
             <Route path="/tutorial" element={<TutorialPanel />} />
+            <Route path="/patchnote" element={<PatchNote />} />
             <Route path="*" element={<Calendar />} />
           </Routes>
         </main>
