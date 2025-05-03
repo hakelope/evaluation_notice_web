@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Calendar from './components/Calendar';
 import EvaluationDetail from './components/EvaluationDetail';
 import AdminPanel from './components/AdminPanel';
@@ -8,6 +8,7 @@ import EditEvaluation from './components/EditEvaluation';
 import AdminPage from './components/AdminPage';
 import TutorialPanel from './components/TutorialPanel';
 import PatchNote from './components/PatchNote';
+import RecentChanges from './components/RecentChanges';
 import './App.css';
 
 function AddEvaluationPage() {
@@ -92,6 +93,7 @@ function App() {
             <Route path="/admin/edit/:id" element={<EditEvaluation />} />
             <Route path="/tutorial" element={<TutorialPanel />} />
             <Route path="/patchnote" element={<PatchNote />} />
+            <Route path="/recent-changes" element={<RecentChanges />} />
             <Route path="*" element={<Calendar />} />
           </Routes>
         </main>

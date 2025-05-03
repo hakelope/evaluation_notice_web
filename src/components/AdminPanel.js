@@ -67,7 +67,8 @@ function AdminPanel() {
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/admin');
+      setIsAuthenticated(false);
+      window.location.href = '/admin';  // 페이지 새로고침을 위해 window.location.href 사용
     } catch (err) {
       console.error('로그아웃 에러:', err);
       setError('로그아웃 중 오류가 발생했습니다.');

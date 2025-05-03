@@ -309,16 +309,24 @@ function CalendarComponent() {
               }}
               onClickDay={handleDateClick}
             />
-            <button 
-              className="today-button"
-              onClick={() => {
-                setDate(today);
-                setSelectedDate(today);
-                setActiveStartDate(today);
-              }}
-            >
-              오늘
-            </button>
+            <div className="calendar-buttons">
+              <button 
+                className="today-button"
+                onClick={() => {
+                  setDate(today);
+                  setSelectedDate(today);
+                  setActiveStartDate(today);
+                }}
+              >
+                오늘
+              </button>
+              <button 
+                className="recent-changes-button"
+                onClick={() => navigate('/recent-changes')}
+              >
+                최근 변경사항
+              </button>
+            </div>
           </div>
         </div>
 

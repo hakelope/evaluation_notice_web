@@ -44,7 +44,8 @@ function EditEvaluation() {
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/admin');
+      setIsAuthenticated(false);
+      window.location.href = '/admin';
     } catch (err) {
       console.error('로그아웃 에러:', err);
       setError('로그아웃 중 오류가 발생했습니다.');

@@ -36,6 +36,13 @@ function AdminPage() {
   };
 
   const handleLogout = () => {
+    // 모든 Supabase 관련 인증 토큰 삭제
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('sb-') && key.includes('auth-token')) {
+        localStorage.removeItem(key)
+      }
+    })
+    
     setIsAuthenticated(false);
     setLoginForm({ email: '', password: '' });
   };

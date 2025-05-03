@@ -119,3 +119,43 @@ dist
 
 #보안관련해서..
 package-lock.json
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+/dist
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build files
+*.js.map
+*.css.map
+*.html
+*.ico
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.woff
+*.woff2
+*.ttf
+*.eot

@@ -627,10 +627,16 @@
   position: relative;
 }
 
-.today-button {
+.calendar-buttons {
   position: absolute;
   right: 0;
-  top: -60px; /* 더 위로 올림 */
+  top: -60px;
+  display: flex;
+  gap: 8px;
+  z-index: 1;
+}
+
+.today-button{
   padding: 8px 16px;
   background-color: #4CAF50;
   color: white;
@@ -641,11 +647,27 @@
   transition: background-color 0.3s;
   height: 40px;
   font-size: 1rem;
-  z-index: 1;
+}
+
+.recent-changes-button {
+  padding: 8px 16px;
+  background-color: #4c5caf;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  height: 40px;
+  font-size: 1rem;
 }
 
 .today-button:hover {
   background-color: #45a049;
+}
+
+.recent-changes-button:hover {
+  background-color: #30447b;
 }
 
 .selection-controls {
