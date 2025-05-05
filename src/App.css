@@ -255,4 +255,24 @@ main {
 .dropdown-item:hover {
   background-color: #f0f7ff;
   color: #1a73e8;
+}
+
+.header-title {
+  text-decoration: none;
+}
+
+.header-title h1 {
+  color: #333;
+  padding: 10px 20px;
+  border: 3px solid #2196f3;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin: 0;
+}
+
+.header-title:hover h1 {
+  background-color: #2196f3;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
 } 

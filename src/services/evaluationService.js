@@ -72,6 +72,24 @@ export const addEvaluation = async (evaluationData) => {
       throw new Error(`evaluations 테이블 에러: ${error.message}`);
     }
 
+    // 변경사항 기록
+    const { error: changeError } = await supabase
+      .from('evaluation_changes')
+      .insert([{
+        evaluation_id: evaluation.id,
+        change_type: 'add',
+        title: evaluation.title,
+        details: {
+          subject: evaluation.subject,
+          grade: evaluation.grade,
+          evaluation_type: evaluation.evaluation_type
+        }
+      }]);
+
+    if (changeError) {
+      console.error('변경사항 기록 에러:', changeError);
+    }
+
     // class_dates 테이블에 데이터 추가
     const classDates = Object.entries(evaluationData.classDates)
       .filter(([_, date]) => date) // 날짜가 있는 경우만 필터링
@@ -135,6 +153,24 @@ export const updateEvaluation = async (id, evaluationData) => {
 
   if (error) throw error
 
+  // 변경사항 기록
+  const { error: changeError } = await supabase
+    .from('evaluation_changes')
+    .insert([{
+      evaluation_id: id,
+      change_type: 'update',
+      title: evaluation.title,
+      details: {
+        subject: evaluation.subject,
+        grade: evaluation.grade,
+        evaluation_type: evaluation.evaluation_type
+      }
+    }]);
+
+  if (changeError) {
+    console.error('변경사항 기록 에러:', changeError);
+  }
+
   // class_dates 업데이트
   await supabase.from('class_dates').delete().eq('evaluation_id', id)
   
@@ -170,6 +206,36 @@ export const updateEvaluation = async (id, evaluationData) => {
 
 export const deleteEvaluation = async (id) => {
   try {
+    // 삭제할 평가 정보 조회
+    const { data: evaluation, error: fetchError } = await supabase
+      .from('evaluations')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('평가 정보 조회 중 에러:', fetchError);
+      throw new Error(`평가 정보 조회 중 에러: ${fetchError.message}`);
+    }
+
+    // 변경사항 기록
+    const { error: changeError } = await supabase
+      .from('evaluation_changes')
+      .insert([{
+        evaluation_id: id,
+        change_type: 'delete',
+        title: evaluation.title,
+        details: {
+          subject: evaluation.subject,
+          grade: evaluation.grade,
+          evaluation_type: evaluation.evaluation_type
+        }
+      }]);
+
+    if (changeError) {
+      console.error('변경사항 기록 에러:', changeError);
+    }
+
     // 1. 관련된 이미지 삭제
     const { error: imagesError } = await supabase
       .from('images')

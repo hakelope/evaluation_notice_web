@@ -4,6 +4,29 @@ import './PatchNote.css';
 function PatchNote() {
   const patches = [
     {
+      version: '1.4.0',
+      date: '2025-05-04',
+      changes: [
+        '메인 페이지 추가'
+      ]
+    },
+    {
+      version: '1.3.0',
+      date: '2025-05-03',
+      changes: [
+        '로그아웃 시 인증 토큰 삭제가 안 되던 버그 수정',
+        '완료한 과제 체크 기능 추가',
+        '수행평가 추가 및 수정 시, 미리보기 추가'
+      ]
+    },
+    {
+      version: '1.2.0',
+      date: '2025-05-02',
+      changes: [
+        '최근 1주일간 변경 사항 확인 기능 추가'
+      ]
+    },
+    {
       version: '1.1.0',
       date: '2025-05-01',
       changes: [

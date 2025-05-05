@@ -21,6 +21,10 @@ function CalendarComponent() {
   });
   const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
   const [evaluations, setEvaluations] = useState([]);
+  const [completedEvaluations, setCompletedEvaluations] = useState(() => {
+    const saved = localStorage.getItem('completedEvaluations');
+    return saved ? JSON.parse(saved) : [];
+  });
   const navigate = useNavigate();
 
   const loadEvaluations = async () => {
@@ -73,6 +77,18 @@ function CalendarComponent() {
   // 날짜 선택 핸들러
   const handleDateClick = (clickedDate) => {
     setSelectedDate(clickedDate);
+  };
+
+  // 완료 상태 토글 함수
+  const toggleEvaluationComplete = (evaluationId, e) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    setCompletedEvaluations(prev => {
+      const newCompleted = prev.includes(evaluationId)
+        ? prev.filter(id => id !== evaluationId)
+        : [...prev, evaluationId];
+      localStorage.setItem('completedEvaluations', JSON.stringify(newCompleted));
+      return newCompleted;
+    });
   };
 
   const tileContent = ({ date }) => {
@@ -145,7 +161,7 @@ function CalendarComponent() {
                   return classDates.map((classDate, classIndex) => (
                     <div 
                       key={`${index}-${classIndex}`}
-                      className="evaluation-text"
+                      className={`evaluation-text ${completedEvaluations.includes(evaluation.id) ? 'completed' : ''}`}
                       onClick={() => navigate(`/evaluation/${evaluation.id}`)}
                       style={{
                         '--highlight-color': evaluation.highlight_color || '#ffeb3b'
@@ -160,7 +176,7 @@ function CalendarComponent() {
                   return defaultDateClasses.map((classLetter, classIndex) => (
                     <div 
                       key={`${index}-${classIndex}`}
-                      className="evaluation-text"
+                      className={`evaluation-text ${completedEvaluations.includes(evaluation.id) ? 'completed' : ''}`}
                       onClick={() => navigate(`/evaluation/${evaluation.id}`)}
                       style={{
                         '--highlight-color': evaluation.highlight_color || '#ffeb3b'
@@ -176,7 +192,7 @@ function CalendarComponent() {
                 return (
                   <div 
                     key={index}
-                    className="evaluation-text"
+                    className={`evaluation-text ${completedEvaluations.includes(evaluation.id) ? 'completed' : ''}`}
                     onClick={() => navigate(`/evaluation/${evaluation.id}`)}
                     style={{
                       '--highlight-color': evaluation.highlight_color || '#ffeb3b'
@@ -218,6 +234,11 @@ function CalendarComponent() {
 
   // 선택된 날짜의 수행평가 목록
   const selectedDateEvaluations = selectedDate ? evaluations.filter(evaluation => {
+    // 먼저 학년 필터링
+    if (evaluation.grade !== selectedGrade) {
+      return false;
+    }
+
     const dateStr = selectedDate.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: '2-digit',
@@ -225,23 +246,27 @@ function CalendarComponent() {
     }).replace(/\. /g, '-').replace('.', '');
 
     if (evaluation.subject_type === 'elective') {
-      // 선택과목인 경우 모든 반의 날짜 확인
-      const hasClassDate = evaluation.class_dates?.some(cd => {
-        if (evaluation.evaluation_type === 'period') {
-          // 기간 수행평가인 경우 시작일과 종료일 사이에 있는지 확인
+      // 선택과목인 경우 같은 학년의 모든 반(A,B,C,D)의 날짜 확인
+      const classDates = evaluation.class_dates?.filter(cd => 
+        ['A', 'B', 'C', 'D'].includes(cd.class_number)
+      ) || [];
+
+      if (evaluation.evaluation_type === 'period') {
+        // 기간 수행평가인 경우 시작일과 종료일 사이에 있는지 확인
+        return classDates.some(cd => {
           const startDate = new Date(cd.date);
           const endDate = new Date(cd.end_date);
           return selectedDate >= startDate && selectedDate <= endDate;
-        }
-        return cd.date === dateStr;
-      });
-      // 반별 날짜가 없으면 default_date 확인
-      if (!hasClassDate && evaluation.evaluation_type === 'period') {
-        const startDate = new Date(evaluation.default_date);
-        const endDate = new Date(evaluation.default_end_date);
-        return selectedDate >= startDate && selectedDate <= endDate;
+        }) || (
+          // 반별 날짜가 없으면 default_date 확인
+          selectedDate >= new Date(evaluation.default_date) && 
+          selectedDate <= new Date(evaluation.default_end_date)
+        );
       }
-      return hasClassDate || evaluation.default_date === dateStr;
+
+      // 반별 날짜가 있으면 그 날짜들을, 없으면 default_date 사용
+      return classDates.some(cd => cd.date === dateStr) || 
+             evaluation.default_date === dateStr;
     } else {
       // 일반과목인 경우 선택된 반의 날짜 확인
       const classDate = evaluation.class_dates?.find(cd => cd.class_number === selectedClass.toString());
@@ -262,7 +287,7 @@ function CalendarComponent() {
       <div className="calendar-header">
         <div className="selection-controls">
           <div className="grade-selector">
-            <label htmlFor="grade-select">학년 선택: </label>
+            <label htmlFor="grade-select"></label>
             <select 
               id="grade-select" 
               value={selectedGrade} 
@@ -275,7 +300,7 @@ function CalendarComponent() {
             </select>
           </div>
           <div className="class-selector">
-            <label htmlFor="class-select">반 선택: </label>
+            <label htmlFor="class-select"></label>
             <select 
               id="class-select" 
               value={selectedClass} 
@@ -344,17 +369,35 @@ function CalendarComponent() {
                       style={{
                         '--highlight-color': evaluation.highlight_color || '#ffeb3b'
                       }}
+                      className={completedEvaluations.includes(evaluation.id) ? 'completed' : ''}
                     >
                       {evaluation.subject} - {evaluation.title}
-                      {evaluation.evaluation_type === 'period' && (
-                        <span className="period-badge">수행평가 기간</span>
-                      )}
-                      {evaluation.evaluation_type === 'submission' && (
-                        <span className="submission-badge">제출 마감일</span>
-                      )}
-                      {evaluation.evaluation_type === 'implementation' && (
-                        <span className="implementation-badge">실시일</span>
-                      )}
+                      <div className="evaluation-badges">
+                        <button
+                          className={`complete-button ${completedEvaluations.includes(evaluation.id) ? 'completed' : ''}`}
+                          onClick={(e) => toggleEvaluationComplete(evaluation.id, e)}
+                          title={completedEvaluations.includes(evaluation.id) ? '완료 취소' : '완료하기'}
+                        >
+                          {completedEvaluations.includes(evaluation.id) ? (
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                              <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                            </svg>
+                          ) : (
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                              <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                          )}
+                        </button>
+                        {evaluation.evaluation_type === 'period' && (
+                          <span className="period-badge">수행평가 기간</span>
+                        )}
+                        {evaluation.evaluation_type === 'submission' && (
+                          <span className="submission-badge">제출 마감일</span>
+                        )}
+                        {evaluation.evaluation_type === 'implementation' && (
+                          <span className="implementation-badge">실시일</span>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>

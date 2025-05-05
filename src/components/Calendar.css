@@ -25,6 +25,7 @@
   gap: 10px;
 }
 
+/* 반 선택 라벨 스타일 */
 .class-selector label {
   font-size: 1.1rem;
   font-weight: 500;
@@ -32,6 +33,7 @@
   margin: 0;
 }
 
+/* 반 선택 드롭다운 스타일 */
 .class-select {
   padding: 8px 15px;
   font-size: 1rem;
@@ -44,16 +46,19 @@
   height: 40px;
 }
 
+/* 반 선택 드롭다운 호버 효과 */
 .class-select:hover {
   background-color: #f5f5f5;
 }
 
+/* 반 선택 드롭다운 포커스 효과 */
 .class-select:focus {
   outline: none;
   border-color: #45a049;
   box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
+/* 수행평가 하이라이트 컨테이너 - 달력 셀 내부의 수행평가 목록을 감싸는 컨테이너 */
 .evaluation-highlight {
   position: absolute;
   top: 30px;  /* 날짜 아래로 이동 */
@@ -69,6 +74,7 @@
   z-index: 1;
 }
 
+/* 개별 수행평가 텍스트 스타일 */
 .evaluation-text {
   position: relative;
   font-size: 0.9rem;
@@ -79,10 +85,12 @@
   margin-bottom: 4px;
   pointer-events: auto;
   z-index: 2;
-  width: 100%;  /* 전체 너비 사용 */
+  width: 120%;
   text-align: left;
+  background-color: transparent;
 }
 
+/* 수행평가 텍스트의 형광펜 효과 */
 .evaluation-text::before {
   content: '';
   position: absolute;
@@ -97,11 +105,13 @@
   transition: all 0.3s ease;
 }
 
+/* 수행평가 텍스트 호버 시 형광펜 효과 */
 .evaluation-text:hover::before {
   opacity: 0.7;
   transform: none;  /* 호버 시에도 기울기 제거 */
 }
 
+/* 더보기 버튼 스타일 */
 .evaluation-more {
   position: relative;
   font-size: 0.9rem;
@@ -119,13 +129,14 @@
   transition: all 0.3s ease;
 }
 
+/* 더보기 버튼 호버 효과 */
 .evaluation-more:hover {
   background: #4CAF50;
   color: white;
   transform: translateX(5px);
 }
 
-/* react-calendar 커스텀 스타일 */
+/* react-calendar 기본 스타일 오버라이드 */
 .react-calendar {
   width: 100%;
   border: none;
@@ -135,15 +146,17 @@
   overflow: hidden;
 }
 
-/* 달력 월 전환 애니메이션 */
+/* 달력 월 전환 애니메이션 컨테이너 */
 .react-calendar__viewContainer {
   transition: all 0.5s ease;
 }
 
+/* 달력 월 뷰 */
 .react-calendar__month-view {
   transition: all 0.5s ease;
 }
 
+/* 달력 각 날짜 셀 스타일 */
 .react-calendar__tile {
   padding: 12px;
   height: 110px !important;
@@ -167,11 +180,13 @@
   color: #333;
 }
 
+/* 달력 셀 호버 효과 */
 .react-calendar__tile:hover {
   background-color: #f5f5f5;
   border-color: #bdbdbd;
 }
 
+/* 오늘 날짜 셀 스타일 */
 .react-calendar__tile--now {
   background: #e6f3ff;
   font-weight: bold;
@@ -179,6 +194,7 @@
   z-index: 1;
 }
 
+/* 선택된 날짜 셀 스타일 */
 .react-calendar__tile--active {
   background: #ffffff !important;
   color: #333;
@@ -188,34 +204,37 @@
   z-index: 2;
 }
 
+/* 달력 날짜 셀 높이 고정 */
 .react-calendar__month-view__days__day {
   height: 110px !important;
 }
 
-/* 주말 색상 변경 */
+/* 주말 날짜 색상 */
 .react-calendar__month-view__days__day--weekend {
   color: #d10000;
   background-color: #fff5f5;
 }
 
-/* 일요일 색상 변경 (모든 일요일) */
+/* 일요일 색상 */
 .react-calendar__month-view__days__day:nth-child(7n+1) {
   color: #d10000 !important;
   background-color: #fff5f5;
 }
 
-/* 토요일 색상 변경 */
+/* 토요일 색상 */
 .react-calendar__month-view__days__day:nth-child(7n+7) {
   color: #0066cc !important;
   background-color: #f0f7ff;
 }
 
+/* 이전/다음 달 날짜 스타일 */
 .react-calendar__month-view__days__day--neighboringMonth {
   color: #bdbdbd;
   background-color: #f9f9f9;
   opacity: 0.7;
 }
 
+/* 달력 네비게이션 바 */
 .react-calendar__navigation {
   margin-bottom: 20px;
   padding: 10px;
@@ -226,6 +245,7 @@
   justify-content: space-between;
 }
 
+/* 달력 네비게이션 버튼 */
 .react-calendar__navigation button {
   font-size: 1.2rem;
   padding: 10px 15px;
@@ -238,12 +258,14 @@
   min-width: 40px;
 }
 
+/* 달력 네비게이션 버튼 호버 효과 */
 .react-calendar__navigation button:hover {
   background-color: #e0e0e0;
   transform: translateY(-2px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* 요일 표시 스타일 */
 .react-calendar__month-view__weekdays {
   font-weight: bold;
   text-transform: uppercase;
@@ -255,7 +277,7 @@
   margin-bottom: 5px;
 }
 
-/* 달력 헤더 스타일 */
+/* 달력 헤더(년월) 스타일 */
 .react-calendar__navigation__label {
   font-size: 1.3rem;
   font-weight: bold;
@@ -267,24 +289,25 @@
   padding: 0 10px;
 }
 
+/* 달력 헤더 호버 효과 */
 .react-calendar__navigation__label:hover {
   color: #4CAF50;
 }
 
-/* 오늘 날짜 강조 */
+/* 오늘 날짜 호버 효과 */
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
   background: #cce5ff;
 }
 
-/* 선택된 날짜 스타일 */
+/* 선택된 날짜 호버 효과 */
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* 날짜 칸 구분선 */
+/* 날짜 셀 하단 구분선 */
 .react-calendar__month-view__days__day::after {
   content: '';
   position: absolute;
@@ -295,7 +318,7 @@
   background-color: #e0e0e0;
 }
 
-/* 날짜 칸 오른쪽 구분선 */
+/* 날짜 셀 우측 구분선 */
 .react-calendar__month-view__days__day::before {
   content: '';
   position: absolute;
@@ -318,11 +341,12 @@
   }
 }
 
+/* 월 뷰 애니메이션 적용 */
 .react-calendar__month-view {
   animation: fadeIn 0.5s ease;
 }
 
-/* 선택된 날짜의 수행평가 목록 스타일 */
+/* 선택된 날짜의 수행평가 목록 컨테이너 */
 .selected-date-evaluations {
   flex: 1;
   min-width: 300px;
@@ -339,6 +363,7 @@
   flex-direction: column;
 }
 
+/* 선택된 날짜의 수행평가 목록 제목 */
 .selected-date-evaluations h3 {
   font-size: 1.3rem;
   color: #333;
@@ -347,6 +372,7 @@
   border-bottom: 2px solid #4CAF50;
 }
 
+/* 수행평가 없음 메시지 스타일 */
 .no-evaluation,
 .no-date-selected {
   text-align: center;
@@ -366,12 +392,14 @@
   min-height: 100px;
 }
 
+/* 수행평가 목록 스타일 */
 .selected-date-evaluations ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+/* 개별 수행평가 항목 스타일 */
 .selected-date-evaluations li {
   padding: 12px 15px;
   margin-bottom: 8px;
@@ -386,6 +414,7 @@
   align-items: center;
 }
 
+/* 수행평가 항목 왼쪽 색상 바 */
 .selected-date-evaluations li::before {
   content: '';
   position: absolute;
@@ -396,11 +425,13 @@
   background-color: var(--highlight-color, #ffeb3b);
 }
 
+/* 수행평가 항목 호버 효과 */
 .selected-date-evaluations li:hover {
   transform: translateX(5px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* 수행평가 기간 뱃지 */
 .period-badge {
   font-size: 0.8em;
   padding: 4px 8px;
@@ -411,6 +442,7 @@
   white-space: nowrap;
 }
 
+/* 제출 마감일 뱃지 */
 .submission-badge {
   font-size: 0.8em;
   padding: 4px 8px;
@@ -421,6 +453,7 @@
   white-space: nowrap;
 }
 
+/* 실시일 뱃지 */
 .implementation-badge {
   font-size: 0.8em;
   padding: 4px 8px;
@@ -448,6 +481,7 @@
   letter-spacing: 2px;
 }
 
+/* 수행평가가 많을 때 표시되는 원형 버튼 */
 .evaluation-circle {
   position: relative;
   width: 40px;
@@ -463,11 +497,13 @@
   transition: all 0.3s ease;
 }
 
+/* 원형 버튼 호버 효과 */
 .evaluation-circle:hover {
   transform: scale(1.1);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* 원형 버튼 내부의 색상 조각 */
 .evaluation-slice {
   position: absolute;
   width: 100%;
@@ -480,6 +516,7 @@
   transform-origin: center;
 }
 
+/* 원형 버튼 내부 색상 조각의 회전 효과 */
 .evaluation-slice::before {
   content: '';
   position: absolute;
@@ -492,6 +529,7 @@
   transform-origin: center;
 }
 
+/* 원형 버튼 내부의 숫자 표시 */
 .evaluation-count {
   position: relative;
   z-index: 2;
@@ -508,7 +546,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* 반응형 디자인 */
+/* 반응형 디자인 - 태블릿 */
 @media screen and (max-width: 768px) {
   .calendar-container {
     padding: 15px;
@@ -560,6 +598,7 @@
   }
 }
 
+/* 반응형 디자인 - 모바일 */
 @media screen and (max-width: 480px) {
   .calendar-container {
     padding: 10px;
@@ -615,29 +654,55 @@
   }
 }
 
+/* 캘린더 헤더 스타일 */
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  padding: 0 10px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.top-nav,
+.top-nav-buttons,
+.nav-dropdown,
+.menu-button,
+.nav-dropdown-menu,
+.dropdown-item {
+  display: none;
+}
+
+.calendar-button {
+  color: #2196f3;
+}
+
+.search-button {
+  color: #4caf50;
+}
+
+/* 캘린더 컨트롤 영역 */
 .calendar-controls {
   position: relative;
 }
 
+/* 캘린더 버튼 컨테이너 */
 .calendar-buttons {
   position: absolute;
   right: 0;
-  top: -60px;
+  top: -73px;
   display: flex;
   gap: 8px;
   z-index: 1;
+  height: 40px;
+  align-items: center;
 }
 
-.today-button{
-  padding: 8px 16px;
+/* 오늘 버튼 스타일 */
+.today-button {
+  padding: 0 16px;
   background-color: #4CAF50;
   color: white;
   border: none;
@@ -646,11 +711,15 @@
   font-weight: 500;
   transition: background-color 0.3s;
   height: 40px;
-  font-size: 1rem;
+  line-height: 40px;
+  font-size: 14px;
+  box-sizing: border-box;
+  display: inline-block;
 }
 
+/* 최근 변경사항 버튼 스타일 */
 .recent-changes-button {
-  padding: 8px 16px;
+  padding: 0 16px;
   background-color: #4c5caf;
   color: white;
   border: none;
@@ -659,50 +728,104 @@
   font-weight: 500;
   transition: background-color 0.3s;
   height: 40px;
-  font-size: 1rem;
+  line-height: 40px;
+  font-size: 14px;
+  box-sizing: border-box;
+  display: inline-block;
 }
 
+/* 오늘 버튼 호버 효과 */
 .today-button:hover {
   background-color: #45a049;
 }
 
+/* 최근 변경사항 버튼 호버 효과 */
 .recent-changes-button:hover {
   background-color: #30447b;
 }
 
+/* 선택 컨트롤 영역 */
 .selection-controls {
   display: flex;
   gap: 20px;
   align-items: center;
-  margin-bottom: 15px;
+  height: 40px;
 }
 
+/* 학년 선택기 스타일 */
 .grade-selector,
 .class-selector {
   display: flex;
   align-items: center;
   gap: 10px;
+  height: 100%;
 }
 
+/* 학년/반 선택 드롭다운 스타일 */
 .grade-select,
 .class-select {
-  padding: 8px 12px;
+  padding: 0 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
   background-color: white;
   cursor: pointer;
   transition: border-color 0.2s;
+  height: 100%;
+  box-sizing: border-box;
 }
 
+/* 학년/반 선택 드롭다운 호버 효과 */
 .grade-select:hover,
 .class-select:hover {
   border-color: #999;
 }
 
+/* 학년/반 선택 드롭다운 포커스 효과 */
 .grade-select:focus,
 .class-select:focus {
   outline: none;
   border-color: #61dafb;
   box-shadow: 0 0 0 2px rgba(97, 218, 251, 0.2);
+}
+
+/* 완료 버튼 스타일 */
+.complete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  margin-right: 4px;
+}
+
+/* 완료 버튼 호버 효과 */
+.complete-button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+/* 완료된 항목 버튼 스타일 */
+.complete-button.completed {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* 완료된 항목 버튼 호버 효과 */
+.complete-button.completed:hover {
+  background-color: #45a049;
+}
+
+/* 완료된 항목 스타일 */
+.selected-date-evaluations li.completed,
+.evaluation-text.completed {
+  text-decoration: line-through;
+  color: #2e7d32;
 } 

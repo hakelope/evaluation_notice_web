@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Calendar from './components/Calendar';
 import EvaluationDetail from './components/EvaluationDetail';
 import AdminPanel from './components/AdminPanel';
@@ -9,6 +9,8 @@ import AdminPage from './components/AdminPage';
 import TutorialPanel from './components/TutorialPanel';
 import PatchNote from './components/PatchNote';
 import RecentChanges from './components/RecentChanges';
+import MainPage from './components/MainPage';
+import SearchPage from './components/SearchPage';
 import './App.css';
 
 function AddEvaluationPage() {
@@ -66,10 +68,15 @@ function App() {
     <Router>
       <div className="app">
         <header className="app-header">
-          <h1>창신고 수행평가 공지</h1>
+          <Link to="/" className="header-title">
+            <h1>창신고 수행평가 공지</h1>
+          </Link>
           <nav className="nav-bar">
-            <Link to="/" className="nav-button">
+            <Link to="/calendar" className="nav-button">
               수행평가 일정 확인
+            </Link>
+            <Link to="/search" className="nav-button">
+              수행평가 검색
             </Link>
             <Link to="/suggestion" className="nav-button">
               건의하기
@@ -84,7 +91,9 @@ function App() {
         </header>
         <main>
           <Routes>
-            <Route path="/" element={<Calendar />} />
+            <Route path="/" element={<MainPage />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/evaluation/:id" element={<EvaluationDetail />} />
             <Route path="/suggestion" element={<SuggestionPage />} />
             <Route path="/admin" element={<AdminPage />} />
@@ -94,7 +103,7 @@ function App() {
             <Route path="/tutorial" element={<TutorialPanel />} />
             <Route path="/patchnote" element={<PatchNote />} />
             <Route path="/recent-changes" element={<RecentChanges />} />
-            <Route path="*" element={<Calendar />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>

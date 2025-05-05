@@ -46,7 +46,7 @@ function EditPanel() {
     try {
       await signOut();
       setIsAuthenticated(false);
-      window.location.href = '/admin';
+      navigate('/admin', { replace: true });
     } catch (err) {
       console.error('로그아웃 에러:', err);
       setError('로그아웃 중 오류가 발생했습니다.');

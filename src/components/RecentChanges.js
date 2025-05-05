@@ -23,7 +23,11 @@ function RecentChanges() {
         .select(`
           *,
           evaluation:evaluation_id (
-            id
+            id,
+            title,
+            subject,
+            grade,
+            evaluation_type
           )
         `)
         .gte('created_at', oneWeekAgoStr)
@@ -31,10 +35,17 @@ function RecentChanges() {
 
       if (error) throw error;
       
-      // evaluation_id를 직접 데이터에 추가
+      // evaluation_id와 evaluation 정보를 직접 데이터에 추가
       const processedData = data.map(change => ({
         ...change,
-        evaluation_id: change.evaluation?.id
+        evaluation_id: change.evaluation?.id,
+        title: change.title || change.evaluation?.title,
+        details: {
+          ...change.details,
+          subject: change.details?.subject || change.evaluation?.subject,
+          grade: change.details?.grade || change.evaluation?.grade,
+          evaluation_type: change.details?.evaluation_type || change.evaluation?.evaluation_type
+        }
       }));
       
       setChanges(processedData || []);
