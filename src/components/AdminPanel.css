@@ -81,12 +81,48 @@
   text-align: center;
 }
 
+.error-message,
+.success-message {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-weight: 500;
+  z-index: 9999;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  width: auto;
+  min-width: 200px;
+  max-width: 90%;
+  text-align: center;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
 .error-message {
   background-color: #ffebee;
   color: #c62828;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 20px;
+  border: 1px solid #ffcdd2;
+}
+
+.success-message {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 
 .evaluation-form {
@@ -95,6 +131,8 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
 }
 
 .form-group {
@@ -108,10 +146,37 @@
   font-weight: bold;
 }
 
-.required {
+.form-group label .required {
   color: #f44336;
   margin-left: 4px;
   font-weight: bold;
+}
+
+.form-group input[type="text"]:required,
+.form-group input[type="date"]:required,
+.form-group input[type="datetime-local"]:required,
+.form-group textarea:required {
+  border: 2px solid #e0e0e0;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.form-group input[type="text"]:required:invalid,
+.form-group input[type="date"]:required:invalid,
+.form-group input[type="datetime-local"]:required:invalid,
+.form-group textarea:required:invalid {
+  border-color: #ffb3b3;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.form-group input[type="text"]:required:focus,
+.form-group input[type="date"]:required:focus,
+.form-group input[type="datetime-local"]:required:focus,
+.form-group textarea:required:focus {
+  border-color: #4CAF50;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
 }
 
 .form-group input[type="text"],
@@ -156,10 +221,31 @@
 }
 
 .class-date-input {
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  flex: 1;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.class-date-input .date-range-inputs {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  align-items: center;
+}
+
+.class-date-input .date-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.class-date-input .date-input label {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: 500;
+  margin-bottom: 2px;
 }
 
 .class-date-input label {
@@ -221,8 +307,8 @@
 }
 
 .form-actions button[type="submit"] {
-  background-color: #61dafb;
-  color: #282c34;
+  background-color: #4CAF50;
+  color: white;
 }
 
 .form-actions button[type="button"] {
@@ -314,61 +400,112 @@
 .materials-input {
   display: flex;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .materials-input input {
   flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   font-size: 14px;
+  transition: all 0.2s ease;
+  background-color: #f8f9fa;
+}
+
+.materials-input input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  background-color: white;
+}
+
+.materials-input input::placeholder {
+  color: #adb5bd;
 }
 
 .add-button {
-  padding: 8px 16px;
-  background-color: #61dafb;
-  color: #282c34;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .add-button:hover {
-  background-color: #4fa8c7;
+  background-color: #43A047;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.1);
+}
+
+.add-button:active {
+  transform: translateY(0);
 }
 
 .materials-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-top: 10px;
 }
 
 .material-item {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background-color: #f5f5f5;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
+  gap: 6px;
+  background-color: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #495057;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+.material-item:hover {
+  background-color: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .remove-button {
   background: none;
   border: none;
-  color: #c62828;
-  font-size: 18px;
+  color: #6c757d;
+  font-size: 16px;
   cursor: pointer;
-  padding: 0 5px;
+  padding: 0 2px;
   line-height: 1;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
 }
 
 .remove-button:hover {
-  color: #b71c1c;
+  opacity: 1;
+  background-color: #dee2e6;
+  color: #495057;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .login-info {
@@ -417,23 +554,43 @@
   padding: 15px;
   text-align: center;
   background-color: #f5f5f5;
-  border: 2px solid #ddd;
+  border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-weight: 600;
   color: #666;
   transition: all 0.3s ease;
 }
 
+/* 필수 라디오 버튼 그룹 스타일 */
+.form-group:has(input[type="radio"]:required:invalid) .subject-type-label span {
+  border-color: #ffb3b3;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.form-group:has(input[type="radio"]:required:invalid) .subject-type-label input[type="radio"]:checked + span {
+  background-color: #fff;
+  border-color: #4CAF50;
+  color: #2E7D32;
+}
+
 .subject-type-label input[type="radio"]:checked + span {
-  background-color: #61dafb;
-  border-color: #61dafb;
-  color: #282c34;
-  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.3);
+  background-color: #e8f5e9;
+  border-color: #4CAF50;
+  color: #2E7D32;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
 }
 
 .subject-type-label:hover span {
-  border-color: #61dafb;
+  border-color: #4CAF50;
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.1);
+}
+
+.subject-type-label input[type="radio"]:checked + span:hover {
+  background-color: #c8e6c9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(76, 175, 80, 0.2);
 }
 
 .pagination {
@@ -447,9 +604,9 @@
 
 .page-button {
   padding: 8px 16px;
-  border: 2px solid #61dafb;
+  border: 2px solid #4CAF50;
   background-color: white;
-  color: #61dafb;
+  color: #4CAF50;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
@@ -457,15 +614,14 @@
 }
 
 .page-button:hover:not(:disabled) {
-  background-color: #61dafb;
+  background-color: #4CAF50;
   color: white;
-  transform: translateY(-2px);
 }
 
 .page-button.active {
-  background-color: #61dafb;
+  background-color: #4CAF50;
   color: white;
-  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.3);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
 .page-button:disabled {
@@ -491,8 +647,8 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #61dafb;
-  box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.2);
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
 .search-input::placeholder {
@@ -642,7 +798,7 @@
   font-weight: 500;
 }
 
-.grade-badge {
+.edit-grade-badge {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 4px;
@@ -651,15 +807,15 @@
   color: white;
 }
 
-.grade-1 {
+.edit-grade-1 {
   background-color: #4CAF50;
 }
 
-.grade-2 {
-  background-color: #2196F3;
+.edit-grade-2 {
+  background-color: #084b83;
 }
 
-.grade-3 {
+.edit-grade-3 {
   background-color: #9C27B0;
 }
 
@@ -713,16 +869,16 @@
 }
 
 .grade-filter-button:hover {
-  border-color: #61dafb;
-  color: #61dafb;
+  border-color: #4CAF50;
+  color: #4CAF50;
   transform: translateY(-2px);
 }
 
 .grade-filter-button.active {
-  background-color: #61dafb;
-  border-color: #61dafb;
+  background-color: #4CAF50;
+  border-color: #4CAF50;
   color: white;
-  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.2);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
 }
 
 .search-container {
@@ -816,4 +972,321 @@
 .preview-evaluation-text:hover::before {
   opacity: 0.7;
   transform: none;
+}
+
+.class-dates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #495057;
+  transition: all 0.2s ease;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.class-dates-header:hover {
+  background-color: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.class-dates-header[aria-expanded="true"] {
+  background-color: #e8f5e9;
+  border-color: #4CAF50;
+  color: #2E7D32;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.1);
+}
+
+.class-dates-header .arrow {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.class-dates-header .arrow::before,
+.class-dates-header .arrow::after {
+  content: '';
+  position: absolute;
+  background-color: #4CAF50;
+  width: 2px;
+  height: 12px;
+  top: 50%;
+  left: 50%;
+  transition: all 0.3s ease;
+}
+
+/* 닫힘 상태 (+자) */
+.class-dates-header .arrow::before {
+  transform: translate(-50%, -50%) rotate(0deg);
+  background-color: #4CAF50;
+}
+
+.class-dates-header .arrow::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+  height: 2px;
+  width: 12px;
+  background-color: #4CAF50;
+}
+
+/* 열림 상태 (X자) */
+.class-dates-header[aria-expanded="true"] .arrow::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+  background-color: #4CAF50;
+}
+
+.class-dates-header[aria-expanded="true"] .arrow::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+  height: 12px;
+  width: 2px;
+  background-color: #4CAF50;
+}
+
+.class-dates-content {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.class-dates-content[aria-expanded="true"] {
+  max-height: 2000px;
+  opacity: 1;
+  padding: 15px;
+}
+
+.class-date-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin: 4px 0;
+  gap: 15px;
+}
+
+.class-date-item:last-child {
+  border-bottom: none;
+}
+
+.class-date-item:hover {
+  background-color: #f8f9fa;
+  transform: translateX(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.class-number {
+  width: 50px;
+  font-weight: 600;
+  color: #4CAF50;
+  font-size: 14px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.date-input-with-default {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.date-input-with-default.using-default {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.date-input-with-default input[type="date"] {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #495057;
+  transition: all 0.2s ease;
+  background-color: white;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+.date-input-with-default.using-default input[type="date"] {
+  background-color: rgba(76, 175, 80, 0.05);
+  border-color: #4CAF50;
+  color: #2E7D32;
+}
+
+.default-date-button {
+  padding: 4px 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: #495057;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.default-date-button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.default-date-button.active {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  color: white;
+}
+
+.default-date-button.active:hover {
+  background-color: #43A047;
+  border-color: #43A047;
+}
+
+.default-date-button:active {
+  background-color: #dee2e6;
+}
+
+@media screen and (max-width: 768px) {
+  .class-date-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .class-number {
+    width: auto;
+    padding: 4px 12px;
+    height: 28px;
+  }
+
+  .class-date-input {
+    width: 100%;
+  }
+
+  .class-date-input .date-range-inputs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .date-input-with-default {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .date-input-with-default.using-default {
+    padding: 8px;
+  }
+
+  .default-date-button {
+    width: 100%;
+    padding: 6px;
+    font-size: 13px;
+  }
+}
+
+.edit-and-add .form-group input[type="date"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #495057;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.edit-and-add .form-group input[type="date"]:hover {
+  border-color: #4CAF50;
+  background-color: white;
+}
+
+.edit-and-add .form-group input[type="date"]:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  background-color: white;
+}
+
+.edit-and-add .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: #81c784;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+.edit-and-add .form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: #66bb6a;
+  opacity: 1;
+}
+
+.edit-and-add .form-group input[type="date"]:disabled {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.edit-and-add .form-group input[type="date"]:disabled::-webkit-calendar-picker-indicator {
+  background-color: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0;
+  transform: translateX(10px);
+  pointer-events: none;
+}
+
+.edit-and-add .date-input-with-default input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.edit-and-add .date-input-with-default.using-default input {
+  background-color: #e8f5e9;
+  border-color: #4CAF50;
+  color: #2E7D32;
+  cursor: pointer;
+}
+
+.edit-and-add .date-input-with-default.using-default input:hover {
+  background-color: #c8e6c9;
+  border-color: #43A047;
+}
+
+.edit-and-add .date-input-with-default input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }

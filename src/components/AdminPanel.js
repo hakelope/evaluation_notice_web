@@ -19,6 +19,16 @@ function AdminPanel() {
     defaultEndDate: '',
     classDates: {},
     classEndDates: {},
+    useDefaultDates: {
+      '1': true, '2': true, '3': true, '4': true,
+      '5': true, '6': true, '7': true, '8': true,
+      'A': true, 'B': true, 'C': true, 'D': true
+    },
+    useDefaultEndDates: {
+      '1': true, '2': true, '3': true, '4': true,
+      '5': true, '6': true, '7': true, '8': true,
+      'A': true, 'B': true, 'C': true, 'D': true
+    },
     details: {
       type: '',
       requirements: [],
@@ -27,7 +37,7 @@ function AdminPanel() {
     },
     subjectType: 'general',
     evaluationType: '',
-    grade: '1'  // 기본값 1학년
+    grade: '1'
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -82,10 +92,47 @@ function AdminPanel() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const newFormData = {
+        ...prev,
+        [name]: value
+      };
+
+      // 기본 날짜가 변경되었을 때 반별 날짜 업데이트
+      if (name === 'defaultDate' || name === 'defaultEndDate') {
+        const updatedClassDates = { ...prev.classDates };
+        const updatedClassEndDates = { ...prev.classEndDates };
+        const isStartDate = name === 'defaultDate';
+
+        // 일반과목인 경우
+        if (prev.subjectType === 'general') {
+          [1, 2, 3, 4, 5, 6, 7, 8].forEach(classNumber => {
+            if (isStartDate && prev.useDefaultDates[classNumber]) {
+              updatedClassDates[classNumber] = value;
+            }
+            if (!isStartDate && prev.evaluationType === 'period' && prev.useDefaultEndDates[classNumber]) {
+              updatedClassEndDates[classNumber] = value;
+            }
+          });
+        } 
+        // 선택과목인 경우
+        else {
+          ['A', 'B', 'C', 'D'].forEach(classLetter => {
+            if (isStartDate && prev.useDefaultDates[classLetter]) {
+              updatedClassDates[classLetter] = value;
+            }
+            if (!isStartDate && prev.evaluationType === 'period' && prev.useDefaultEndDates[classLetter]) {
+              updatedClassEndDates[classLetter] = value;
+            }
+          });
+        }
+
+        newFormData.classDates = updatedClassDates;
+        newFormData.classEndDates = updatedClassEndDates;
+      }
+
+      return newFormData;
+    });
   };
 
   const handleDetailsChange = (e) => {
@@ -105,6 +152,10 @@ function AdminPanel() {
       classDates: {
         ...prev.classDates,
         [classNumber]: date
+      },
+      useDefaultDates: {
+        ...prev.useDefaultDates,
+        [classNumber]: false
       }
     }));
   };
@@ -115,6 +166,10 @@ function AdminPanel() {
       classEndDates: {
         ...prev.classEndDates,
         [classNumber]: date
+      },
+      useDefaultEndDates: {
+        ...prev.useDefaultEndDates,
+        [classNumber]: false
       }
     }));
   };
@@ -148,9 +203,28 @@ function AdminPanel() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setLoading(true);
     setError(null);
     setSuccessMessage('');
+
+    // 필수 입력란 검사
+    const requiredFields = {
+      'subject': '과목',
+      'title': '제목',
+      'defaultDate': '기본 날짜',
+      'type': '유형',
+      'evaluationType': '수행평가 유형'
+    };
+
+    for (const [field, label] of Object.entries(requiredFields)) {
+      const value = field === 'type' ? formData.details.type : formData[field];
+      if (!value) {
+        setError(`${label}을(를) 입력해주세요!`);
+        setLoading(false);
+        return;
+      }
+    }
 
     try {
       // 수행평가 저장
@@ -176,10 +250,9 @@ function AdminPanel() {
       }
       
       resetForm();
-      setSuccessMessage('완료되었습니다!');
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      setSuccessMessage('추가가 완료되었습니다!');
       setTimeout(() => {
-        navigate('/admin/edit');
+        navigate('/admin');
       }, 1500);
     } catch (err) {
       console.error('수행평가 저장 중 에러:', err);
@@ -198,6 +271,16 @@ function AdminPanel() {
       defaultEndDate: '',
       classDates: {},
       classEndDates: {},
+      useDefaultDates: {
+        '1': true, '2': true, '3': true, '4': true,
+        '5': true, '6': true, '7': true, '8': true,
+        'A': true, 'B': true, 'C': true, 'D': true
+      },
+      useDefaultEndDates: {
+        '1': true, '2': true, '3': true, '4': true,
+        '5': true, '6': true, '7': true, '8': true,
+        'A': true, 'B': true, 'C': true, 'D': true
+      },
       details: {
         type: '',
         requirements: [],
@@ -223,6 +306,8 @@ function AdminPanel() {
       defaultEndDate: evaluation.default_end_date,
       classDates: {},
       classEndDates: {},
+      useDefaultDates: {},
+      useDefaultEndDates: {},
       details: {
         type: evaluation.evaluation_details?.type || '',
         requirements: evaluation.evaluation_details?.requirements || [],
@@ -234,11 +319,14 @@ function AdminPanel() {
       grade: evaluation.grade || '1'
     };
 
-    // class_dates 배열을 객체로 변환
+    // class_dates 배열을 객체로 변환하면서 기본 날짜 사용 여부도 설정
     evaluation.class_dates?.forEach(cd => {
       formData.classDates[cd.class_number] = cd.date;
+      // 기본 날짜와 일치하면 기본 날짜 사용으로 설정
+      formData.useDefaultDates[cd.class_number] = cd.date === evaluation.default_date;
       if (evaluation.evaluation_type === 'period') {
         formData.classEndDates[cd.class_number] = cd.end_date;
+        formData.useDefaultEndDates[cd.class_number] = cd.end_date === evaluation.default_end_date;
       }
     });
 
@@ -311,7 +399,9 @@ function AdminPanel() {
       ...prev,
       subjectType,
       classDates: {},
-      classEndDates: {}
+      classEndDates: {},
+      useDefaultDates: {},
+      useDefaultEndDates: {}
     }));
   };
 
@@ -339,6 +429,29 @@ function AdminPanel() {
   };
 
   const totalPages = Math.ceil(getFilteredEvaluations().length / itemsPerPage);
+
+  const toggleDefaultDate = (classNumber, isStartDate = true) => {
+    setFormData(prev => {
+      const key = isStartDate ? 'useDefaultDates' : 'useDefaultEndDates';
+      const defaultDate = isStartDate ? prev.defaultDate : prev.defaultEndDate;
+      
+      const newUseDefaultDates = { ...prev[key] };
+      newUseDefaultDates[classNumber] = !newUseDefaultDates[classNumber];
+
+      const newDates = { ...prev.classDates };
+      if (newUseDefaultDates[classNumber]) {
+        newDates[classNumber] = defaultDate;
+      } else {
+        delete newDates[classNumber];
+      }
+
+      return {
+        ...prev,
+        [key]: newUseDefaultDates,
+        classDates: newDates
+      };
+    });
+  };
 
   if (!isAuthenticated) {
     return (
@@ -377,7 +490,7 @@ function AdminPanel() {
   }
 
   return (
-    <div className="admin-panel">
+    <div className="admin-panel edit-and-add">
       <div className="admin-nav">
         <Link to="/admin/add" className="nav-button active">
           수행평가 추가하기
@@ -397,9 +510,13 @@ function AdminPanel() {
       </div>
       
       {error && <div className="error-message">{error}</div>}
-      {successMessage && <div className="success-message">{successMessage}</div>}
       
-      <form onSubmit={handleSubmit} className="evaluation-form">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleSubmit(e);
+        return false;
+      }} className="evaluation-form">
         <div className="form-group">
           <label>과목 유형</label>
           <div className="subject-type-buttons">
@@ -562,23 +679,43 @@ function AdminPanel() {
             <div className="date-range-inputs">
               <div className="date-input">
                 <label>시작일</label>
-                <input
-                  type="date"
-                  name="defaultDate"
-                  value={formData.defaultDate}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className={`date-input-with-default ${formData.useDefaultDates['1'] ? 'using-default' : ''}`}>
+                  <input
+                    type="date"
+                    name="defaultDate"
+                    value={formData.defaultDate}
+                    onChange={handleInputChange}
+                    required
+                    onClick={() => formData.useDefaultDates['1'] && toggleDefaultDate('1', true)}
+                  />
+                  <button
+                    type="button"
+                    className={`default-date-button ${formData.useDefaultDates['1'] ? 'active' : ''}`}
+                    onClick={() => toggleDefaultDate('1', true)}
+                  >
+                    {formData.useDefaultDates['1'] ? '기본 날짜 사용 중' : '기본 날짜'}
+                  </button>
+                </div>
               </div>
               <div className="date-input">
                 <label>종료일</label>
-                <input
-                  type="date"
-                  name="defaultEndDate"
-                  value={formData.defaultEndDate}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className={`date-input-with-default ${formData.useDefaultEndDates['1'] ? 'using-default' : ''}`}>
+                  <input
+                    type="date"
+                    name="defaultEndDate"
+                    value={formData.defaultEndDate}
+                    onChange={handleInputChange}
+                    required
+                    onClick={() => formData.useDefaultEndDates['1'] && toggleDefaultDate('1', false)}
+                  />
+                  <button
+                    type="button"
+                    className={`default-date-button ${formData.useDefaultEndDates['1'] ? 'active' : ''}`}
+                    onClick={() => toggleDefaultDate('1', false)}
+                  >
+                    {formData.useDefaultEndDates['1'] ? '기본 날짜 사용 중' : '기본 날짜'}
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
@@ -601,83 +738,144 @@ function AdminPanel() {
             <span>반 별 일정 변경</span>
             <span className="arrow"></span>
           </div>
-          {isClassDatesOpen && (
-            <div className="class-dates-content">
-              {formData.subjectType === 'general' ? (
-                [1, 2, 3, 4, 5, 6, 7, 8].map(classNumber => (
-                  <div key={classNumber} className="class-date-item">
-                    <div className="class-number">{classNumber}반</div>
-                    <div className="class-date-input">
-                      {formData.evaluationType === 'period' ? (
-                        <div className="date-range-inputs">
-                          <div className="date-input">
-                            <label>시작일</label>
+          <div 
+            className="class-dates-content"
+            aria-expanded={isClassDatesOpen}
+          >
+            {formData.subjectType === 'general' ? (
+              [1, 2, 3, 4, 5, 6, 7, 8].map(classNumber => (
+                <div key={classNumber} className="class-date-item">
+                  <div className="class-number">{classNumber}반</div>
+                  <div className="class-date-input">
+                    {formData.evaluationType === 'period' ? (
+                      <div className="date-range-inputs">
+                        <div className="date-input">
+                          <label>시작일</label>
+                          <div className={`date-input-with-default ${formData.useDefaultDates[classNumber] ? 'using-default' : ''}`}>
                             <input
                               type="date"
                               value={formData.classDates[classNumber] || ''}
                               onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
                               placeholder="시작일"
+                              onClick={() => formData.useDefaultDates[classNumber] && toggleDefaultDate(classNumber, true)}
                             />
+                            <button
+                              type="button"
+                              className={`default-date-button ${formData.useDefaultDates[classNumber] ? 'active' : ''}`}
+                              onClick={() => toggleDefaultDate(classNumber, true)}
+                            >
+                              {formData.useDefaultDates[classNumber] ? '기본 날짜 사용 중' : '기본 날짜'}
+                            </button>
                           </div>
-                          <div className="date-input">
-                            <label>종료일</label>
+                        </div>
+                        <div className="date-input">
+                          <label>종료일</label>
+                          <div className={`date-input-with-default ${formData.useDefaultEndDates[classNumber] ? 'using-default' : ''}`}>
                             <input
                               type="date"
                               value={formData.classEndDates[classNumber] || ''}
                               onChange={(e) => handleClassEndDateChange(classNumber, e.target.value)}
                               placeholder="종료일"
+                              onClick={() => formData.useDefaultEndDates[classNumber] && toggleDefaultDate(classNumber, false)}
                             />
+                            <button
+                              type="button"
+                              className={`default-date-button ${formData.useDefaultEndDates[classNumber] ? 'active' : ''}`}
+                              onClick={() => toggleDefaultDate(classNumber, false)}
+                            >
+                              {formData.useDefaultEndDates[classNumber] ? '기본 날짜 사용 중' : '기본 날짜'}
+                            </button>
                           </div>
                         </div>
-                      ) : (
+                      </div>
+                    ) : (
+                      <div className={`date-input-with-default ${formData.useDefaultDates[classNumber] ? 'using-default' : ''}`}>
                         <input
                           type="date"
                           value={formData.classDates[classNumber] || ''}
                           onChange={(e) => handleClassDateChange(classNumber, e.target.value)}
+                          onClick={() => formData.useDefaultDates[classNumber] && toggleDefaultDate(classNumber, true)}
                         />
-                      )}
-                    </div>
+                        <button
+                          type="button"
+                          className={`default-date-button ${formData.useDefaultDates[classNumber] ? 'active' : ''}`}
+                          onClick={() => toggleDefaultDate(classNumber, true)}
+                        >
+                          {formData.useDefaultDates[classNumber] ? '기본 날짜 사용 중' : '기본 날짜'}
+                        </button>
+                      </div>
+                    )}
                   </div>
-                ))
-              ) : (
-                ['A', 'B', 'C', 'D'].map(classLetter => (
-                  <div key={classLetter} className="class-date-item">
-                    <div className="class-number">{classLetter}반</div>
-                    <div className="class-date-input">
-                      {formData.evaluationType === 'period' ? (
-                        <div className="date-range-inputs">
-                          <div className="date-input">
-                            <label>시작일</label>
+                </div>
+              ))
+            ) : (
+              ['A', 'B', 'C', 'D'].map(classLetter => (
+                <div key={classLetter} className="class-date-item">
+                  <div className="class-number">{classLetter}반</div>
+                  <div className="class-date-input">
+                    {formData.evaluationType === 'period' ? (
+                      <div className="date-range-inputs">
+                        <div className="date-input">
+                          <label>시작일</label>
+                          <div className={`date-input-with-default ${formData.useDefaultDates[classLetter] ? 'using-default' : ''}`}>
                             <input
                               type="date"
                               value={formData.classDates[classLetter] || ''}
                               onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
                               placeholder="시작일"
+                              onClick={() => formData.useDefaultDates[classLetter] && toggleDefaultDate(classLetter, true)}
                             />
+                            <button
+                              type="button"
+                              className={`default-date-button ${formData.useDefaultDates[classLetter] ? 'active' : ''}`}
+                              onClick={() => toggleDefaultDate(classLetter, true)}
+                            >
+                              {formData.useDefaultDates[classLetter] ? '기본 날짜 사용 중' : '기본 날짜'}
+                            </button>
                           </div>
-                          <div className="date-input">
-                            <label>종료일</label>
+                        </div>
+                        <div className="date-input">
+                          <label>종료일</label>
+                          <div className={`date-input-with-default ${formData.useDefaultEndDates[classLetter] ? 'using-default' : ''}`}>
                             <input
                               type="date"
                               value={formData.classEndDates[classLetter] || ''}
                               onChange={(e) => handleClassEndDateChange(classLetter, e.target.value)}
                               placeholder="종료일"
+                              onClick={() => formData.useDefaultEndDates[classLetter] && toggleDefaultDate(classLetter, false)}
                             />
+                            <button
+                              type="button"
+                              className={`default-date-button ${formData.useDefaultEndDates[classLetter] ? 'active' : ''}`}
+                              onClick={() => toggleDefaultDate(classLetter, false)}
+                            >
+                              {formData.useDefaultEndDates[classLetter] ? '기본 날짜 사용 중' : '기본 날짜'}
+                            </button>
                           </div>
                         </div>
-                      ) : (
+                      </div>
+                    ) : (
+                      <div className={`date-input-with-default ${formData.useDefaultDates[classLetter] ? 'using-default' : ''}`}>
                         <input
                           type="date"
                           value={formData.classDates[classLetter] || ''}
                           onChange={(e) => handleClassDateChange(classLetter, e.target.value)}
+                          onClick={() => formData.useDefaultDates[classLetter] && toggleDefaultDate(classLetter, true)}
                         />
-                      )}
-                    </div>
+                        <button
+                          type="button"
+                          className={`default-date-button ${formData.useDefaultDates[classLetter] ? 'active' : ''}`}
+                          onClick={() => toggleDefaultDate(classLetter, true)}
+                        >
+                          {formData.useDefaultDates[classLetter] ? '기본 날짜 사용 중' : '기본 날짜'}
+                        </button>
+                      </div>
+                    )}
                   </div>
-                ))
-              )}
-            </div>
-          )}
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
         <div className="form-group">
@@ -779,6 +977,7 @@ function AdminPanel() {
           </button>
         </div>
       </form>
+      {successMessage && <div className="success-message bottom">{successMessage}</div>}
     </div>
   );
 }

@@ -306,7 +306,7 @@ function EditPanel() {
                 {evaluation.evaluation_type === 'implementation' && (
                   <span className="implementation-badge">실시일</span>
                 )}
-                <span className={`grade-badge grade-${evaluation.grade}`}>
+                <span className={`edit-grade-badge edit-grade-${evaluation.grade}`}>
                   {evaluation.grade}학년
                 </span>
               </div>

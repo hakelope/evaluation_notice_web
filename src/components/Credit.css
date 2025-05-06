@@ -1,0 +1,142 @@
+.credit-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.credit-content {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 50px;
+  border-radius: 30px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.credit-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #2196f3, #4caf50, #ff9800, #9c27b0);
+}
+
+.credit-content h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 50px;
+  font-size: 2.8rem;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.credit-content h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #2196f3, #4caf50);
+  border-radius: 2px;
+}
+
+.credit-section {
+  margin-bottom: 50px;
+  padding: 30px;
+  background: #f8f9fa;
+  border-radius: 20px;
+  transition: transform 0.3s ease;
+}
+
+.credit-section:hover {
+  transform: translateY(-5px);
+}
+
+.credit-section h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+  font-weight: 600;
+}
+
+.credit-item {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.credit-item:last-child {
+  margin-bottom: 0;
+}
+
+.credit-item h3 {
+  color: #2196f3;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.credit-item p {
+  color: #666;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.credit-footer {
+  margin-top: 70px;
+  padding-top: 30px;
+  border-top: 2px solid #e9ecef;
+  text-align: center;
+}
+
+.credit-footer p {
+  color: #666;
+  margin: 8px 0;
+  font-size: 1.1rem;
+}
+
+.credit-footer p:first-child {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .credit-content {
+    padding: 30px 20px;
+  }
+
+  .credit-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .credit-section {
+    padding: 20px;
+  }
+
+  .credit-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .credit-item {
+    padding: 15px;
+  }
+
+  .credit-item h3 {
+    font-size: 1.2rem;
+  }
+
+  .credit-item p {
+    font-size: 1rem;
+  }
+} 

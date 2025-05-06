@@ -233,40 +233,61 @@
   }
 
   .board-header {
-    grid-template-columns: 2fr 1fr 1fr;
-    padding: 12px 15px;
-    font-size: 13px;
-  }
-
-  .search-evaluation-item {
-    grid-template-columns: 2fr 1fr 1fr;
-    padding: 12px 15px;
-    height: auto;
-    min-height: 45px;
-    padding-right: 120px;
-  }
-
-  .search-item-title {
-    font-size: 13px;
-    padding: 0 8px;
-  }
-
-  .search-item-subject {
-    font-size: 13px;
-    padding: 0 8px;
-  }
-
-  .search-item-grade {
-    font-size: 13px;
-    padding: 0 8px;
-  }
-
-  .search-item-period {
     display: none;
   }
 
-  .search-item-period-mobile {
+  .search-evaluation-item {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    height: auto;
+    min-height: 45px;
+    padding-right: 120px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .search-item-title {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 0;
+    width: 100%;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+
+  .search-item-subject {
+    font-size: 14px;
+    padding: 0;
+    width: 100%;
+    color: #2196F3;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .search-item-grade {
+    font-size: 14px;
+    padding: 0;
+    width: 100%;
+    color: #495057;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .search-item-period {
     display: block;
+    width: 100%;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #666;
+    padding: 6px 0;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .search-item-period-mobile {
+    display: none;
   }
 
   .search-evaluation-badges {
@@ -278,22 +299,23 @@
   .search-period-badge,
   .search-submission-badge,
   .search-implementation-badge {
-    font-size: 0.7em;
-    padding: 3px 6px;
+    font-size: 12px;
+    padding: 4px 8px;
     margin: 0;
     white-space: nowrap;
+    font-weight: 500;
   }
 
   .search-complete-button {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     margin: 0;
     flex-shrink: 0;
   }
 
   .search-complete-button svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 }
 

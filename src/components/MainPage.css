@@ -1,10 +1,17 @@
 .main-page {
   min-height: 100vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #f8f9fa;
   padding: 20px;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .main-content {
@@ -93,6 +100,33 @@
 
 .patch-btn:hover {
   background-color: #7b1fa2;
+  transform: translateY(-5px);
+}
+
+.search-btn {
+  background-color: #00bcd4;
+}
+
+.search-btn:hover {
+  background-color: #0097a7;
+  transform: translateY(-5px);
+}
+
+.recent-btn {
+  background-color: #673ab7;
+}
+
+.recent-btn:hover {
+  background-color: #512da8;
+  transform: translateY(-5px);
+}
+
+.credit-btn {
+  background-color: #ebe020;
+}
+
+.credit-btn:hover {
+  background-color: #b4ae39;
   transform: translateY(-5px);
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import Calendar from './components/Calendar';
 import EvaluationDetail from './components/EvaluationDetail';
 import AdminPanel from './components/AdminPanel';
@@ -11,6 +11,7 @@ import PatchNote from './components/PatchNote';
 import RecentChanges from './components/RecentChanges';
 import MainPage from './components/MainPage';
 import SearchPage from './components/SearchPage';
+import Credit from './components/Credit';
 import './App.css';
 
 function AddEvaluationPage() {
@@ -67,28 +68,7 @@ function App() {
   return (
     <Router>
       <div className="app">
-        <header className="app-header">
-          <Link to="/" className="header-title">
-            <h1>창신고 수행평가 공지</h1>
-          </Link>
-          <nav className="nav-bar">
-            <Link to="/calendar" className="nav-button">
-              수행평가 일정 확인
-            </Link>
-            <Link to="/search" className="nav-button">
-              수행평가 검색
-            </Link>
-            <Link to="/suggestion" className="nav-button">
-              건의하기
-            </Link>
-            <Link to="/admin" className="nav-button">
-              관리자
-            </Link>
-            <Link to="/patchnote" className="nav-button">
-              패치 노트
-            </Link>
-          </nav>
-        </header>
+        <Header />
         <main>
           <Routes>
             <Route path="/" element={<MainPage />} />
@@ -103,11 +83,59 @@ function App() {
             <Route path="/tutorial" element={<TutorialPanel />} />
             <Route path="/patchnote" element={<PatchNote />} />
             <Route path="/recent-changes" element={<RecentChanges />} />
+            <Route path="/credit" element={<Credit />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
     </Router>
+  );
+}
+
+function Header() {
+  const location = useLocation();
+  
+  // 메인 페이지일 때는 헤더를 숨김
+  if (location.pathname === '/') {
+    return null;
+  }
+
+  return (
+    <header className="app-header">
+      <Link to="/" className="header-title">
+        <h1>창신고 수행평가 공지</h1>
+      </Link>
+      <NavBar />
+    </header>
+  );
+}
+
+function NavBar() {
+  const location = useLocation();
+  
+  // 메인 페이지나 크레딧 페이지일 때는 네비게이션 바를 숨김
+  if (location.pathname === '/' || location.pathname === '/credit') {
+    return null;
+  }
+
+  return (
+    <nav className="nav-bar">
+      <Link to="/calendar" className="nav-button">
+        수행평가 일정 확인
+      </Link>
+      <Link to="/search" className="nav-button">
+        수행평가 검색
+      </Link>
+      <Link to="/suggestion" className="nav-button">
+        건의하기
+      </Link>
+      <Link to="/admin" className="nav-button">
+        관리자
+      </Link>
+      <Link to="/patchnote" className="nav-button">
+        패치 노트
+      </Link>
+    </nav>
   );
 }
 

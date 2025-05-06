@@ -8,7 +8,10 @@ function SearchPage() {
   const [evaluations, setEvaluations] = useState([]);
   const [filteredEvaluations, setFilteredEvaluations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [completedEvaluations, setCompletedEvaluations] = useState([]);
+  const [completedEvaluations, setCompletedEvaluations] = useState(() => {
+    const saved = localStorage.getItem('completedEvaluations');
+    return saved ? JSON.parse(saved) : [];
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,11 +56,13 @@ function SearchPage() {
 
   const toggleEvaluationComplete = (id, e) => {
     e.stopPropagation();
-    if (completedEvaluations.includes(id)) {
-      setCompletedEvaluations(completedEvaluations.filter((i) => i !== id));
-    } else {
-      setCompletedEvaluations([...completedEvaluations, id]);
-    }
+    setCompletedEvaluations(prev => {
+      const newCompleted = prev.includes(id)
+        ? prev.filter(i => i !== id)
+        : [...prev, id];
+      localStorage.setItem('completedEvaluations', JSON.stringify(newCompleted));
+      return newCompleted;
+    });
   };
 
   if (loading) {
