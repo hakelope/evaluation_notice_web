@@ -5,12 +5,48 @@ import './RecentChanges.css';
 
 function RecentChanges() {
   const [changes, setChanges] = useState([]);
+  const [filteredChanges, setFilteredChanges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    grade: 'all',
+    evaluationType: 'all',
+    changeType: 'all'
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchChanges();
   }, []);
+
+  useEffect(() => {
+    filterChanges();
+  }, [changes, filters]);
+
+  const filterChanges = () => {
+    let filtered = [...changes];
+    
+    if (filters.grade !== 'all') {
+      filtered = filtered.filter(change => change.details?.grade === filters.grade);
+    }
+    
+    if (filters.evaluationType !== 'all') {
+      filtered = filtered.filter(change => change.details?.evaluation_type === filters.evaluationType);
+    }
+    
+    if (filters.changeType !== 'all') {
+      filtered = filtered.filter(change => change.change_type === filters.changeType);
+    }
+    
+    setFilteredChanges(filtered);
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const fetchChanges = async () => {
     try {
@@ -89,11 +125,44 @@ function RecentChanges() {
   return (
     <div className="recent-changes-container">
       <h2>최근 1주일간의 수행평가 변경 사항</h2>
+      
+      <div className="recent-filters-container">
+        <div className="recent-filter-group">
+          <label>학년</label>
+          <select name="grade" value={filters.grade} onChange={handleFilterChange}>
+            <option value="all">전체</option>
+            <option value="1">1학년</option>
+            <option value="2">2학년</option>
+            <option value="3">3학년</option>
+          </select>
+        </div>
+        
+        <div className="recent-filter-group">
+          <label>평가 유형</label>
+          <select name="evaluationType" value={filters.evaluationType} onChange={handleFilterChange}>
+            <option value="all">전체</option>
+            <option value="period">수행평가 기간</option>
+            <option value="submission">제출 마감일</option>
+            <option value="implementation">실시일</option>
+          </select>
+        </div>
+        
+        <div className="recent-filter-group">
+          <label>수정 유형</label>
+          <select name="changeType" value={filters.changeType} onChange={handleFilterChange}>
+            <option value="all">전체</option>
+            <option value="add">추가됨</option>
+            <option value="update">수정됨</option>
+            <option value="delete">삭제됨</option>
+          </select>
+        </div>
+      </div>
+
       <div className="changes-list">
         {loading ? (
           <div className="loading">로딩 중...</div>
-        ) : changes.length > 0 ? (
-          changes.map((change) => (
+        ) : filteredChanges.length > 0 ? (
+          filteredChanges.map((change) => (
             <div key={change.id} className="change-item">
               <div className="change-header">
                 <span className="change-type" data-type={change.change_type}>
@@ -144,7 +213,7 @@ function RecentChanges() {
           ))
         ) : (
           <div className="no-changes">
-            최근 1주일간 변경된 수행평가가 없습니다.
+            {changes.length > 0 ? '선택한 필터에 맞는 변경 사항이 없습니다.' : '최근 1주일간 변경된 수행평가가 없습니다.'}
           </div>
         )}
       </div>

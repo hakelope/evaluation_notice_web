@@ -60,7 +60,7 @@ function Credit() {
         </div>
 
         <div className="credit-footer">
-          <p>© 2025 창신고등학교 수행평가 알리미</p>
+          <p>changSINON-창신고등학교 수행평가 알리미</p>
           <p>버전 1.5.0</p>
         </div>
       </div>

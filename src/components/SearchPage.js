@@ -12,13 +12,17 @@ function SearchPage() {
     const saved = localStorage.getItem('completedEvaluations');
     return saved ? JSON.parse(saved) : [];
   });
+  const [filters, setFilters] = useState({
+    grade: '',
+    type: '',
+    sortOrder: 'desc'
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvaluations = async () => {
       try {
         const data = await getEvaluations();
-        // 날짜순으로 정렬
         const sortedEvaluations = data.sort((a, b) => 
           new Date(b.default_date) - new Date(a.default_date)
         );
@@ -35,20 +39,56 @@ function SearchPage() {
   }, []);
 
   useEffect(() => {
-    // 검색어가 없으면 모든 수행평가 표시
-    if (!searchTerm.trim()) {
-      setFilteredEvaluations(evaluations);
-      return;
+    let filtered = evaluations;
+
+    // 검색어 필터링
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(evaluation => 
+        evaluation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        evaluation.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (evaluation.evaluation_details?.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    // 검색어에 따라 수행평가 필터링
-    const filtered = evaluations.filter(evaluation => 
-      evaluation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      evaluation.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (evaluation.evaluation_details?.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // 학년 필터링
+    if (filters.grade) {
+      filtered = filtered.filter(evaluation => 
+        String(evaluation.grade) === filters.grade
+      );
+    }
+
+    // 평가 유형 필터링
+    if (filters.type) {
+      filtered = filtered.filter(evaluation => 
+        evaluation.evaluation_type === filters.type
+      );
+    }
+
+    // 날짜 정렬
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.default_date);
+      const dateB = new Date(b.default_date);
+      return filters.sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
     setFilteredEvaluations(filtered);
-  }, [searchTerm, evaluations]);
+  }, [searchTerm, evaluations, filters]);
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      grade: '',
+      type: '',
+      sortOrder: 'desc'
+    });
+    setSearchTerm('');
+  };
 
   const handleEvaluationClick = (id) => {
     navigate(`/evaluation/${id}`);
@@ -83,6 +123,48 @@ function SearchPage() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
+      </div>
+
+      <div className="filter-section">
+        <div className="filter-group">
+          <select 
+            value={filters.grade}
+            onChange={(e) => handleFilterChange('grade', e.target.value)}
+            className="filter-select"
+          >
+            <option value="">모든 학년</option>
+            <option value="1">1학년</option>
+            <option value="2">2학년</option>
+            <option value="3">3학년</option>
+          </select>
+
+          <select 
+            value={filters.type}
+            onChange={(e) => handleFilterChange('type', e.target.value)}
+            className="filter-select"
+          >
+            <option value="">모든 유형</option>
+            <option value="period">수행평가 기간</option>
+            <option value="submission">제출 마감일</option>
+            <option value="implementation">실시일</option>
+          </select>
+
+          <select 
+            value={filters.sortOrder}
+            onChange={(e) => handleFilterChange('sortOrder', e.target.value)}
+            className="filter-select"
+          >
+            <option value="desc">가까운 순</option>
+            <option value="asc">먼 순</option>
+          </select>
+        </div>
+
+        <button 
+          onClick={resetFilters}
+          className="reset-filters-button"
+        >
+          필터 초기화
+        </button>
       </div>
 
       <div className="search-results">
