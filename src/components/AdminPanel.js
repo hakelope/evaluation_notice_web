@@ -679,43 +679,24 @@ function AdminPanel() {
             <div className="date-range-inputs">
               <div className="date-input">
                 <label>시작일</label>
-                <div className={`date-input-with-default ${formData.useDefaultDates['1'] ? 'using-default' : ''}`}>
-                  <input
-                    type="date"
-                    name="defaultDate"
-                    value={formData.defaultDate}
-                    onChange={handleInputChange}
-                    required
-                    onClick={() => formData.useDefaultDates['1'] && toggleDefaultDate('1', true)}
-                  />
-                  <button
-                    type="button"
-                    className={`default-date-button ${formData.useDefaultDates['1'] ? 'active' : ''}`}
-                    onClick={() => toggleDefaultDate('1', true)}
-                  >
-                    {formData.useDefaultDates['1'] ? '기본 날짜 사용 중' : '기본 날짜'}
-                  </button>
-                </div>
+                <input
+                  type="date"
+                  name="defaultDate"
+                  value={formData.defaultDate}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
               <div className="date-input">
                 <label>종료일</label>
-                <div className={`date-input-with-default ${formData.useDefaultEndDates['1'] ? 'using-default' : ''}`}>
-                  <input
-                    type="date"
-                    name="defaultEndDate"
-                    value={formData.defaultEndDate}
-                    onChange={handleInputChange}
-                    required
-                    onClick={() => formData.useDefaultEndDates['1'] && toggleDefaultDate('1', false)}
-                  />
-                  <button
-                    type="button"
-                    className={`default-date-button ${formData.useDefaultEndDates['1'] ? 'active' : ''}`}
-                    onClick={() => toggleDefaultDate('1', false)}
-                  >
-                    {formData.useDefaultEndDates['1'] ? '기본 날짜 사용 중' : '기본 날짜'}
-                  </button>
-                </div>
+                <input
+                  type="date"
+                  name="defaultEndDate"
+                  value={formData.defaultEndDate}
+                  onChange={handleInputChange}
+                  min={formData.defaultDate}
+                  required
+                />
               </div>
             </div>
           ) : (
@@ -775,6 +756,7 @@ function AdminPanel() {
                               type="date"
                               value={formData.classEndDates[classNumber] || ''}
                               onChange={(e) => handleClassEndDateChange(classNumber, e.target.value)}
+                              min={formData.classDates[classNumber] || formData.defaultDate}
                               placeholder="종료일"
                               onClick={() => formData.useDefaultEndDates[classNumber] && toggleDefaultDate(classNumber, false)}
                             />
@@ -841,6 +823,7 @@ function AdminPanel() {
                               type="date"
                               value={formData.classEndDates[classLetter] || ''}
                               onChange={(e) => handleClassEndDateChange(classLetter, e.target.value)}
+                              min={formData.classDates[classLetter] || formData.defaultDate}
                               placeholder="종료일"
                               onClick={() => formData.useDefaultEndDates[classLetter] && toggleDefaultDate(classLetter, false)}
                             />

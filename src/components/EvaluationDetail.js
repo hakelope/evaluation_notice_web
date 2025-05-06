@@ -108,33 +108,89 @@ function EvaluationDetail() {
       </button>
       <h2>{evaluation.subject} : {evaluation.title}</h2>
       
-      {/* 이미지 슬라이더 */}
-      {images && images.length > 0 && (
-        <div className="image-slider">
-          <Slider {...sliderSettings}>
-            {images.map((image, index) => (
-              <div key={index} className="slider-image">
-                <div className="image-container">
-                  <img 
-                    src={image.url} 
-                    alt={`수행평가 이미지 ${index + 1}`}
-                    onClick={() => handleImageClick(index)}
-                  />
-                  <button 
-                    className="download-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDownload(image.url, index);
-                    }}
-                  >
-                    다운로드
-                  </button>
-                </div>
-              </div>
-            ))}
-          </Slider>
+      <div className="evaluation-info">
+        <div className="evaluation-header-info">
+          <div className="info-row">
+            <span className="info-label">학년</span>
+            <span className="info-value">{evaluation.grade}학년</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">평가 유형</span>
+            <span className={`info-value evaluation-type ${evaluation.evaluation_type}`}>
+              {evaluation.evaluation_type === 'period' && '수행평가 기간'}
+              {evaluation.evaluation_type === 'submission' && '제출 마감일'}
+              {evaluation.evaluation_type === 'implementation' && '실시일'}
+            </span>
+          </div>
         </div>
-      )}
+
+        <div className="details-section">
+          {images && images.length > 0 && (
+            <div className="images-section">
+              <h4>첨부 이미지</h4>
+              <div className="image-slider">
+                <Slider {...sliderSettings}>
+                  {images.map((image, index) => (
+                    <div key={index} className="slider-image">
+                      <div className="image-container">
+                        <img 
+                          src={image.url} 
+                          alt={`수행평가 이미지 ${index + 1}`}
+                          onClick={() => handleImageClick(index)}
+                        />
+                        <button 
+                          className="download-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(image.url, index);
+                          }}
+                        >
+                          다운로드
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+              </div>
+            </div>
+          )}
+
+          <div className="requirements-section">
+            <h4>요구사항</h4>
+            {requirements.length > 0 ? (
+              <ul className="requirements-list">
+                {requirements.map((req, index) => (
+                  <li key={index}>{req}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="no-content">요구사항이 없습니다.</p>
+            )}
+          </div>
+
+          <div className="materials-section">
+            <h4>준비물</h4>
+            {materials.length > 0 ? (
+              <ul className="materials-list">
+                {materials.map((mat, index) => (
+                  <li key={index} className="material-item">{mat}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="no-content">준비물이 없습니다.</p>
+            )}
+          </div>
+
+          {evaluation.evaluation_details?.notes && (
+            <div className="notes-section">
+              <h4>참고사항</h4>
+              <div className="notes-content">
+                {evaluation.evaluation_details.notes}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <Lightbox
         open={lightboxOpen}
@@ -155,45 +211,6 @@ function EvaluationDetail() {
           ]
         }}
       />
-
-      <div className="evaluation-info">
-        <p className="type">유형: {evaluation.evaluation_details?.type}</p>
-
-        <div className="details-section">
-          <h3>상세 정보</h3>
-          
-          <div className="requirements">
-            <h4>요구사항</h4>
-            {requirements.length > 0 ? (
-              <ul>
-                {requirements.map((req, index) => (
-                  <li key={index}>{req}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>요구사항이 없습니다.</p>
-            )}
-          </div>
-
-          <div className="materials">
-            <h4>준비물</h4>
-            {materials.length > 0 ? (
-              <ul>
-                {materials.map((mat, index) => (
-                  <li key={index}>{mat}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>준비물이 없습니다.</p>
-            )}
-          </div>
-
-          <div className="notes">
-            <h4>참고사항</h4>
-            <p>{evaluation.evaluation_details?.notes || '없음'}</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
