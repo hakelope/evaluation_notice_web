@@ -641,7 +641,7 @@ function AdminPanel() {
             name="title"
             value={formData.title}
             onChange={handleInputChange}
-            placeholder="예: 1학기 중간고사"
+            placeholder="예: 화학 탐구보고서"
             required
           />
         </div>
