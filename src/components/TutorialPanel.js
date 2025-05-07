@@ -31,7 +31,7 @@ function TutorialPanel() {
                   <p>일반과목 또는 선택과목을 선택합니다.</p>
                   <p className="note">* 일반과목의 경우, 자신이 선택한 반의 일정만 표시됩니다.</p>
 
-                  <p className="note">* 선택과목의 경우, 모든 학생들에게 A, B, C, D반의 수행평가 일정이 모두 표시됩니다.</p>
+                  <p className="note">* 선택과목의 경우, 해당 학년의 모든 학생들에게 A, B, C, D반의 수행평가 일정이 모두 표시됩니다. (반이 섞여있기 때문입니다.)</p>
                 </div>
                 <div className="step-item">
                   <span className="step-label">수행평가 유형</span>
