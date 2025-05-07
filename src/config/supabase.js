@@ -1,14 +1,42 @@
 import { createClient } from '@supabase/supabase-js'
+import CryptoJS from 'crypto-js';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY
+
+// 암호화 키 (실제 운영 환경에서는 환경 변수로 관리해야 함)
+const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secure-key';
+
+// 암호화 함수
+const encrypt = (text) => {
+  return CryptoJS.AES.encrypt(text, ENCRYPTION_KEY).toString();
+};
+
+// 복호화 함수
+const decrypt = (ciphertext) => {
+  try {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, ENCRYPTION_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    console.error('복호화 실패:', error);
+    return null;
+  }
+};
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('환경 변수 설정이 누락되었습니다.');
   throw new Error('서비스 초기화에 실패했습니다. 관리자에게 문의하세요.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+// API 키 암호화
+const encryptedKey = encrypt(supabaseKey);
+const decryptedKey = decrypt(encryptedKey);
+
+if (!decryptedKey) {
+  throw new Error('API 키 복호화에 실패했습니다. 관리자에게 문의하세요.');
+}
+
+export const supabase = createClient(supabaseUrl, decryptedKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,

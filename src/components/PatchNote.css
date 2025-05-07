@@ -72,7 +72,7 @@
   font-size: 1.2em;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1100px) {
   .patch-note-container {
     padding: 15px;
   }

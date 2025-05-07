@@ -207,7 +207,7 @@ main {
   background-color: #FF3333;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1100px) {
   .suggestion-boxes {
     flex-direction: column;
     gap: 20px;
