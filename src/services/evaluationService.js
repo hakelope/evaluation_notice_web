@@ -11,8 +11,8 @@ export const getEvaluations = async () => {
     `)
   
   if (error) {
-    console.error('수행평가 목록을 불러오는데 실패했습니다:', error)
-    throw error
+    console.error('수행평가 목록을 불러오는데 실패했습니다:', error);
+    throw new Error('수행평가 목록을 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
   }
 
   // 데이터 구조 변환

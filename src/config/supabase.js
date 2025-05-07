@@ -4,9 +4,8 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Supabase URL or Key is missing. Please check your .env file.')
-  console.error('REACT_APP_SUPABASE_URL:', supabaseUrl)
-  console.error('REACT_APP_SUPABASE_ANON_KEY:', supabaseKey)
+  console.error('환경 변수 설정이 누락되었습니다.');
+  throw new Error('서비스 초기화에 실패했습니다. 관리자에게 문의하세요.');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -17,14 +16,33 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   }
 })
 
+// 세션 만료 시간 (24시간)
+const SESSION_EXPIRY = 24 * 60 * 60 * 1000;
+
 // 인증 상태 확인 함수
 export const checkAuth = async () => {
-  const { data: { session }, error } = await supabase.auth.getSession()
-  if (error) {
-    console.error('인증 상태 확인 중 오류 발생:', error)
-    return false
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('인증 상태 확인 중 오류 발생:', error);
+      return false;
+    }
+    
+    if (!session) return false;
+
+    // 세션 만료 확인
+    const sessionCreatedAt = new Date(session.created_at).getTime();
+    const now = new Date().getTime();
+    if (now - sessionCreatedAt > SESSION_EXPIRY) {
+      await signOut();
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('인증 상태 확인 중 오류 발생:', error);
+    return false;
   }
-  return !!session
 }
 
 // 로그인 함수
@@ -33,14 +51,20 @@ export const signIn = async (email, password) => {
     email,
     password
   })
-  if (error) throw error
+  if (error) {
+    console.error('로그인 에러:', error);
+    throw new Error('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+  }
   return data
 }
 
 // 로그아웃 함수
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut()
-  if (error) throw error
+  if (error) {
+    console.error('로그아웃 에러:', error);
+    throw new Error('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  }
 }
 
 export const addEvaluation = async (evaluationData) => {

@@ -16,10 +16,26 @@ export const uploadImage = async (evaluationId, file) => {
       throw new Error('업로드할 파일이 필요합니다.');
     }
 
+    // 파일 크기 제한 (5MB)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error('파일 크기는 5MB를 초과할 수 없습니다.');
+    }
+
+    // 허용된 파일 형식 검증
+    const ALLOWED_EXTENSIONS = [
+      'jpg', 'jpeg', 'png', 'gif', 
+      'webp', 'bmp', 'tiff', 'tif',
+      'svg', 'ico', 'heic', 'heif'
+    ];
+    const fileExt = file.name.split('.').pop().toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+      throw new Error('지원하지 않는 파일 형식입니다. (지원 형식: JPG, JPEG, PNG, GIF, WEBP, BMP, TIFF, SVG, ICO, HEIC)');
+    }
+
     console.log('이미지 업로드 시작:', { evaluationId, fileName: file.name });
     
     // 파일 이름 생성 (중복 방지)
-    const fileExt = file.name.split('.').pop();
     const timestamp = new Date().getTime();
     const randomNum = Math.random().toString(36).substring(2, 8);
     const fileName = `${evaluationId}/${timestamp}-${randomNum}.${fileExt}`;
@@ -36,9 +52,9 @@ export const uploadImage = async (evaluationId, file) => {
     if (uploadError) {
       console.error('이미지 업로드 에러:', uploadError);
       if (uploadError.message.includes('bucket')) {
-        throw new Error('스토리지 버킷에 접근할 수 없습니다. 관리자에게 문의하세요.');
+        throw new Error('이미지 업로드에 실패했습니다. 잠시 후 다시 시도해주세요.');
       }
-      throw uploadError;
+      throw new Error('이미지 업로드에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
     console.log('Storage 업로드 성공:', uploadData);
 
@@ -69,7 +85,7 @@ export const uploadImage = async (evaluationId, file) => {
       } catch (deleteError) {
         console.error('업로드된 이미지 삭제 실패:', deleteError);
       }
-      throw new Error(`이미지 정보 저장 실패: ${dbError.message}`);
+      throw new Error('이미지 정보 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
     console.log('이미지 정보 저장 성공:', imageData);
 
@@ -90,8 +106,8 @@ export const getImages = async (evaluationId) => {
       .eq('evaluation_id', evaluationId)
 
     if (error) {
-      console.error('이미지 조회 에러:', error)
-      throw error
+      console.error('이미지 조회 에러:', error);
+      throw new Error('이미지 조회에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
     console.log('조회된 이미지:', images);
 
@@ -114,8 +130,8 @@ export const deleteImage = async (imageId) => {
       .single()
 
     if (fetchError) {
-      console.error('이미지 URL 조회 에러:', fetchError)
-      throw fetchError
+      console.error('이미지 URL 조회 에러:', fetchError);
+      throw new Error('이미지 정보 조회에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
     console.log('삭제할 이미지 URL:', image.url);
 
@@ -126,8 +142,8 @@ export const deleteImage = async (imageId) => {
       .remove([fileName])
 
     if (storageError) {
-      console.error('Storage 이미지 삭제 에러:', storageError)
-      throw storageError
+      console.error('Storage 이미지 삭제 에러:', storageError);
+      throw new Error('이미지 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
     console.log('Storage 이미지 삭제 성공');
 
@@ -138,8 +154,8 @@ export const deleteImage = async (imageId) => {
       .eq('id', imageId)
 
     if (dbError) {
-      console.error('이미지 정보 삭제 에러:', dbError)
-      throw dbError
+      console.error('이미지 정보 삭제 에러:', dbError);
+      throw new Error('이미지 정보 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
     console.log('이미지 정보 삭제 성공');
   } catch (error) {
