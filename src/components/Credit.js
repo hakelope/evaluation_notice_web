@@ -72,7 +72,10 @@ function Credit() {
             <h3>김지홍 선생님</h3>
             <p>미적분 과목 수행평가 공지 참여</p>
           </div>
-          
+          <div className="credit-item" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <h3>김현지 선생님</h3>
+            <p>미술 과목 수행평가 공지 참여</p>
+          </div>
         </div>
 
         <div className="credit-section">

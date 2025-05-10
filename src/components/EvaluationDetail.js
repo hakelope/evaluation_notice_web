@@ -190,6 +190,10 @@ function EvaluationDetail() {
             </div>
           )}
         </div>
+
+        <div className="submission-notice">
+          <p>제출은 리로스쿨로 진행해주세요.</p>
+        </div>
       </div>
 
       <Lightbox

@@ -467,4 +467,31 @@
   left: 8px;
   top: 12px;
   font-size: 1.2rem;
+}
+
+.submission-notice {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.submission-notice p {
+  color: #495057;
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .submission-notice {
+    margin-top: 20px;
+    padding: 12px;
+  }
+
+  .submission-notice p {
+    font-size: 14px;
+  }
 } 

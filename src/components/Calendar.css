@@ -843,4 +843,212 @@
 .evaluation-text.completed {
   text-decoration: line-through;
   color: #2e7d32;
+}
+
+.button-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.evaluation-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.complete-button,
+.hide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.complete-button:hover,
+.hide-button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.complete-button.completed,
+.hide-button.hidden {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.complete-button.completed:hover,
+.hide-button.hidden:hover {
+  background-color: #45a049;
+}
+
+.complete-button svg,
+.hide-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  .button-group {
+    gap: 3px;
+    margin-right: 6px;
+  }
+
+  .evaluation-badges {
+    gap: 6px;
+    padding: 3px 6px;
+  }
+
+  .complete-button,
+  .hide-button {
+    width: 18px;
+    height: 18px;
+  }
+
+  .complete-button svg,
+  .hide-button svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .button-group {
+    gap: 2px;
+    margin-right: 4px;
+  }
+
+  .evaluation-badges {
+    gap: 4px;
+    padding: 2px 4px;
+  }
+
+  .complete-button,
+  .hide-button {
+    width: 16px;
+    height: 16px;
+  }
+
+  .complete-button svg,
+  .hide-button svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.calendar-button-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.calendar-evaluation-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.calendar-complete-button,
+.calendar-hide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.calendar-complete-button:hover,
+.calendar-hide-button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.calendar-complete-button.completed,
+.calendar-hide-button.hidden {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.calendar-complete-button.completed:hover,
+.calendar-hide-button.hidden:hover {
+  background-color: #45a049;
+}
+
+.calendar-complete-button svg,
+.calendar-hide-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  .calendar-button-group {
+    gap: 3px;
+    margin-right: 6px;
+  }
+
+  .calendar-evaluation-badges {
+    gap: 6px;
+    padding: 3px 6px;
+  }
+
+  .calendar-complete-button,
+  .calendar-hide-button {
+    width: 18px;
+    height: 18px;
+  }
+
+  .calendar-complete-button svg,
+  .calendar-hide-button svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .calendar-button-group {
+    gap: 2px;
+    margin-right: 4px;
+  }
+
+  .calendar-evaluation-badges {
+    gap: 4px;
+    padding: 2px 4px;
+  }
+
+  .calendar-complete-button,
+  .calendar-hide-button {
+    width: 16px;
+    height: 16px;
+  }
+
+  .calendar-complete-button svg,
+  .calendar-hide-button svg {
+    width: 12px;
+    height: 12px;
+  }
 } 

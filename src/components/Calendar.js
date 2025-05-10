@@ -25,6 +25,10 @@ function CalendarComponent() {
     const saved = localStorage.getItem('completedEvaluations');
     return saved ? JSON.parse(saved) : [];
   });
+  const [hiddenEvaluations, setHiddenEvaluations] = useState(() => {
+    const saved = localStorage.getItem('hiddenEvaluations');
+    return saved ? JSON.parse(saved) : [];
+  });
   const navigate = useNavigate();
 
   const loadEvaluations = async () => {
@@ -91,6 +95,17 @@ function CalendarComponent() {
     });
   };
 
+  const toggleEvaluationHidden = (evaluationId, e) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    setHiddenEvaluations(prev => {
+      const newHidden = prev.includes(evaluationId)
+        ? prev.filter(id => id !== evaluationId)
+        : [...prev, evaluationId];
+      localStorage.setItem('hiddenEvaluations', JSON.stringify(newHidden));
+      return newHidden;
+    });
+  };
+
   const tileContent = ({ date }) => {
     // 날짜를 YYYY-MM-DD 형식으로 변환 (로컬 시간 기준)
     const dateStr = date.toLocaleDateString('ko-KR', {
@@ -104,6 +119,11 @@ function CalendarComponent() {
 
     // 선택된 학년과 반의 날짜에 해당하는 수행평가 찾기
     const dayEvaluations = evaluations.filter(evaluation => {
+      // 숨긴 과제 필터링
+      if (hiddenEvaluations.includes(evaluation.id)) {
+        return false;
+      }
+
       // 먼저 학년 필터링
       if (evaluation.grade !== selectedGrade) {
         return false;
@@ -234,6 +254,11 @@ function CalendarComponent() {
 
   // 선택된 날짜의 수행평가 목록
   const selectedDateEvaluations = selectedDate ? evaluations.filter(evaluation => {
+    // 숨긴 과제 필터링
+    if (hiddenEvaluations.includes(evaluation.id)) {
+      return false;
+    }
+
     // 먼저 학년 필터링
     if (evaluation.grade !== selectedGrade) {
       return false;
@@ -372,22 +397,39 @@ function CalendarComponent() {
                       className={completedEvaluations.includes(evaluation.id) ? 'completed' : ''}
                     >
                       {evaluation.subject} - {evaluation.title}
-                      <div className="evaluation-badges">
-                        <button
-                          className={`complete-button ${completedEvaluations.includes(evaluation.id) ? 'completed' : ''}`}
-                          onClick={(e) => toggleEvaluationComplete(evaluation.id, e)}
-                          title={completedEvaluations.includes(evaluation.id) ? '완료 취소' : '완료하기'}
-                        >
-                          {completedEvaluations.includes(evaluation.id) ? (
-                            <svg viewBox="0 0 24 24" width="16" height="16">
-                              <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                            </svg>
-                          ) : (
-                            <svg viewBox="0 0 24 24" width="16" height="16">
-                              <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                            </svg>
-                          )}
-                        </button>
+                      <div className="calendar-evaluation-badges">
+                        <div className="calendar-button-group">
+                          <button
+                            className={`calendar-hide-button ${hiddenEvaluations.includes(evaluation.id) ? 'hidden' : ''}`}
+                            onClick={(e) => toggleEvaluationHidden(evaluation.id, e)}
+                            title={hiddenEvaluations.includes(evaluation.id) ? '숨기기 취소' : '숨기기'}
+                          >
+                            {hiddenEvaluations.includes(evaluation.id) ? (
+                              <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                              </svg>
+                            ) : (
+                              <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path fill="currentColor" d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+                              </svg>
+                            )}
+                          </button>
+                          <button
+                            className={`calendar-complete-button ${completedEvaluations.includes(evaluation.id) ? 'completed' : ''}`}
+                            onClick={(e) => toggleEvaluationComplete(evaluation.id, e)}
+                            title={completedEvaluations.includes(evaluation.id) ? '완료 취소' : '완료하기'}
+                          >
+                            {completedEvaluations.includes(evaluation.id) ? (
+                              <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                              </svg>
+                            ) : (
+                              <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
                         {evaluation.evaluation_type === 'period' && (
                           <span className="period-badge">수행평가 기간</span>
                         )}
